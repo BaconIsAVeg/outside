@@ -4,7 +4,7 @@ VER := shell('version-manager package ' + NAME + ' get')
 ZIP_NAME := NAME + '-' + VER + '.tar.gz'
 
 # Run the in-progress development process
-dev: fmt fix clippy test changelog
+dev: fmt fix clippy test # changelog
     @echo "{{BLACK + BG_BLUE}}Development checks complete.{{NORMAL}}"
     jj status
 
