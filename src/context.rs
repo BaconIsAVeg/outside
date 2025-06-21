@@ -7,14 +7,16 @@ pub struct Context {
     pub city: String,
     pub country: String,
     pub temperature: f64,
+    pub feels_like: f64,
     pub temperature_unit: String,
     pub wind_speed: f64,
     pub wind_speed_unit: String,
     pub wind_direction: i32,
+    pub wind_compass: String,
     pub weather_code: i32,
     pub weather_icon: String,
     pub weather_description: String,
-    pub openweather_weather_code: String,
+    pub openweather_code: String,
     pub humidity: i32,
     pub humidity_unit: String,
     pub pressure: f64,
@@ -33,7 +35,8 @@ impl Context {
         let daily = &weather.daily;
         let daily_units = &weather.daily_units;
         let units = &weather.current_units;
-        let openweather_weather_code = mappings::meteo2openweather_codes(current.weather_code);
+        let openweather_code = mappings::meteo2openweather_codes(current.weather_code);
+        let wind_compass = mappings::degrees2compass(current.wind_direction_10m as f64);
 
         let weather_description = mappings::weather_description(current.weather_code);
         let weather_icon = mappings::weather_code2icon(current.weather_code);
@@ -47,14 +50,16 @@ impl Context {
             city: location.city,
             country: location.country_code,
             temperature: current.temperature_2m,
+            feels_like: current.apparent_temperature,
             temperature_unit: units.temperature_2m.clone(),
             wind_speed: current.wind_speed_10m,
             wind_speed_unit: units.wind_speed_10m.clone(),
             wind_direction: current.wind_direction_10m,
+            wind_compass,
             weather_code: current.weather_code,
             weather_icon,
             weather_description,
-            openweather_weather_code,
+            openweather_code,
             humidity: current.relative_humidity_2m,
             humidity_unit: units.relative_humidity_2m.clone(),
             pressure: current.pressure_msl,

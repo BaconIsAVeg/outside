@@ -1,3 +1,17 @@
+const COMPASS_DIRECTIONS: [&str; 9] = ["N", "NE", "E", "SE", "S", "SW", "W", "NW", "N"];
+const COMPASS_SEGMENT: f64 = 45.0;
+
+pub fn degrees2compass(degrees: f64) -> String {
+    let normalized = degrees % 360.0;
+    let index = ((normalized) / COMPASS_SEGMENT).round() as i32;
+
+    match COMPASS_DIRECTIONS.get(index as usize) {
+        Some(&direction) => direction,
+        None => "??",
+    }
+    .to_string()
+}
+
 pub fn weather_code2icon(code: i32) -> String {
     openweather_weather_icon(meteo2openweather_codes(code))
 }
