@@ -12,7 +12,8 @@ pub struct IPLocation {
 }
 
 impl Location for IPLocation {
-    /* TODO:
+    /*
+     * TODO:
      * Should check X-Rl and X-Ttl headers for rate limiting, but no easy
      * way to notify the user without a panic or error. Can we cache the response in a state file?
      */

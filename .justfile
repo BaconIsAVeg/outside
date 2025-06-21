@@ -4,15 +4,12 @@ VER := shell('version-manager package ' + NAME + ' get')
 ZIP_NAME := NAME + '-' + VER + '.tar.gz'
 
 # Run the in-progress development process
-dev: fmt fix clippy test # changelog
+dev: fmt fix clippy test
     @echo "{{BLACK + BG_BLUE}}Development checks complete.{{NORMAL}}"
     jj status
 
 doc:
     cargo doc -q
-
-changelog:
-    git cliff -t {{VER}} -o CHANGELOG.md
 
 test:
     @echo "{{BLACK + BG_GREEN}}Running tests for {{NAME}} version {{VER}}...{{NORMAL}}"

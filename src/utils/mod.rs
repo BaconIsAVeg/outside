@@ -1,2 +1,2 @@
-pub mod lookups;
+pub mod mappings;
 pub mod units;

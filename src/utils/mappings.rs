@@ -1,8 +1,8 @@
-pub fn weather_code_to_icon(code: i32) -> String {
-    owm_weather_icon(meteo_to_owm_code_map(code))
+pub fn weather_code2icon(code: i32) -> String {
+    openweather_weather_icon(meteo2openweather_codes(code))
 }
 
-pub fn owm_weather_icon(condition: String) -> String {
+pub fn openweather_weather_icon(condition: String) -> String {
     match condition.as_str() {
         "01d" => "󰖙",
         "01n" => "󰖔",
@@ -19,7 +19,7 @@ pub fn owm_weather_icon(condition: String) -> String {
     .to_string()
 }
 
-pub fn meteo_to_owm_code_map(code: i32) -> String {
+pub fn meteo2openweather_codes(code: i32) -> String {
     match code {
         0 => "01d",       // Clear sky
         1 => "02d",       // Mainly clear

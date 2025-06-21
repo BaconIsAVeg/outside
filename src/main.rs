@@ -2,6 +2,7 @@ use crate::api::{LocationData, weather};
 use crate::utils::units;
 
 pub mod api;
+pub mod context;
 pub mod output;
 pub mod settings;
 pub mod utils;
@@ -27,5 +28,26 @@ fn main() {
 
         println!("{:#?}", weather.current);
         println!("{:#?}", weather.daily);
+    }
+
+    let context = context::Context::build(weather, location);
+
+    match configuration.output_format {
+        settings::OutputFormat::Simple => {
+            let output = output::render_output::<output::simple::SimpleOutput>(context);
+            println!("{}", output);
+        },
+        settings::OutputFormat::Waybar => {
+            let output = output::render_output::<output::waybar::WaybarOutput>(context);
+            println!("{}", output);
+        },
+        settings::OutputFormat::Json => {
+            let output = output::render_output::<output::json::JsonOutput>(context);
+            println!("{}", output);
+        },
+        settings::OutputFormat::Detailed => {
+            let output = output::render_output::<output::detailed::DetailedOutput>(context);
+            println!("{}", output);
+        },
     }
 }
