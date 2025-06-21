@@ -1,4 +1,4 @@
-use crate::api::{LocationData, weather};
+use crate::api::{weather, LocationData};
 use crate::utils::units;
 
 pub mod api;
@@ -9,6 +9,7 @@ pub mod utils;
 
 fn main() {
     let xdg_dirs = xdg::BaseDirectories::with_prefix(env!("CARGO_PKG_NAME"));
+
     let configuration =
         settings::Settings::build(xdg_dirs.find_config_files("config.yaml"), std::env::args_os())
             .unwrap();
@@ -18,16 +19,14 @@ fn main() {
         settings::Units::Imperial => units::Units::imperial(),
     };
 
-    let location: LocationData = LocationData::lookup(configuration.location.to_owned());
+    let location: LocationData = LocationData::get_cached(configuration.location.to_owned());
 
-    let weather = weather::Weather::fetch(location.latitude, location.longitude, units);
+    let weather = weather::Weather::get_cached(location.latitude, location.longitude, units);
 
     if cfg!(debug_assertions) {
         println!("{:#?}", configuration);
-        println!("{:#?}", location);
-
-        println!("{:#?}", weather.current);
-        println!("{:#?}", weather.daily);
+        // println!("{:#?}", weather.current);
+        // println!("{:#?}", weather.daily);
     }
 
     let context = context::Context::build(weather, location);

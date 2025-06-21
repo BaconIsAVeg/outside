@@ -1,3 +1,6 @@
+use serde::{Deserialize, Serialize};
+
+#[derive(Default, Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct Units {
     pub temperature: String,
     pub wind_speed: String,

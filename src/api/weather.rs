@@ -1,8 +1,12 @@
 use crate::utils::units::Units;
+use disk::*;
 use isahc::prelude::*;
+use serde::{Deserialize, Serialize};
+use std::time::{SystemTime, UNIX_EPOCH};
 use url::Url;
 
-#[derive(serde::Deserialize, Debug)]
+json!(Weather, Dir::Data, env!("CARGO_PKG_NAME"), "weather", "data");
+#[derive(Default, Serialize, Deserialize, Debug)]
 pub struct Weather {
     pub current: Current,
     pub current_units: CurrentUnits,
@@ -11,9 +15,13 @@ pub struct Weather {
     pub utc_offset_seconds: i32,
     pub daily: Daily,
     pub daily_units: DailyUnits,
+    pub latitude: f64,
+    pub longitude: f64,
+    #[serde(default)]
+    pub created_at: u64,
 }
 
-#[derive(serde::Deserialize, Debug)]
+#[derive(Default, Serialize, Deserialize, Debug)]
 pub struct Current {
     pub apparent_temperature: f64,
     pub interval: i32,
@@ -27,7 +35,7 @@ pub struct Current {
     pub wind_gusts_10m: f64,
 }
 
-#[derive(serde::Deserialize, Debug)]
+#[derive(Default, Serialize, Deserialize, Debug)]
 pub struct CurrentUnits {
     pub apparent_temperature: String,
     pub interval: String,
@@ -41,7 +49,7 @@ pub struct CurrentUnits {
     pub wind_gusts_10m: String,
 }
 
-#[derive(serde::Deserialize, Debug)]
+#[derive(Default, Serialize, Deserialize, Debug)]
 pub struct Daily {
     pub time: Vec<String>,
     pub sunrise: Vec<String>,
@@ -51,7 +59,7 @@ pub struct Daily {
     pub precipitation_hours: Vec<f64>,
 }
 
-#[derive(serde::Deserialize, Debug)]
+#[derive(Default, Serialize, Deserialize, Debug)]
 pub struct DailyUnits {
     pub sunrise: String,
     pub sunset: String,
@@ -61,6 +69,38 @@ pub struct DailyUnits {
 }
 
 impl Weather {
+    pub fn get_cached(lat: f64, lon: f64, units: Units) -> Self {
+        let now: u64 = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
+        let wd = Weather::from_file().unwrap_or_default();
+
+        if wd.latitude == lat
+            && wd.longitude == lon
+            && wd.created_at > 0
+            && now - wd.created_at < 600
+        {
+            if cfg!(debug_assertions) {
+                println!("Using cached weather data: {:#?}", wd);
+            }
+            return wd;
+        }
+
+        let mut data = Self::fetch(lat, lon, units);
+        data.latitude = format!("{:.1}", data.latitude).parse().unwrap_or(0.0);
+        data.longitude = format!("{:.1}", data.longitude).parse().unwrap_or(0.0);
+        data.created_at = now;
+
+        match data.save_atomic() {
+            Ok(_) => {
+                if cfg!(debug_assertions) {
+                    println!("Wrote weather data to disk: {:#?}", data);
+                }
+            },
+            Err(e) => eprintln!("Failed saving weather data to disk: {:#?}", e),
+        }
+
+        data
+    }
+
     pub fn fetch(lat: f64, lon: f64, units: Units) -> Self {
         let api_url = Self::build_url(
             lat,

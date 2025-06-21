@@ -1,5 +1,6 @@
 use crate::api::{Location, LocationData};
 use isahc::prelude::*;
+use std::time::{SystemTime, UNIX_EPOCH};
 use url::Url;
 
 #[derive(serde::Deserialize, serde::Serialize, Debug)]
@@ -17,8 +18,8 @@ pub struct Results {
 }
 
 impl Location for GeoLocation {
-    fn fetch(name: &str, country_code: &str) -> LocationData {
-        let api_url = build_url(name, country_code);
+    fn fetch(n: &str, c: &str) -> LocationData {
+        let api_url = build_url(n, c);
 
         let mut response = isahc::get(api_url).expect("Failed to send Location request");
         if !response.status().is_success() {
@@ -28,22 +29,27 @@ impl Location for GeoLocation {
         let loc: GeoLocation =
             serde_json::from_str(&body).expect("Failed to parse Location JSON response");
 
+        let city = loc.results[0].admin2.to_owned();
+        let country_code = loc.results[0].country_code.to_owned();
+
         LocationData {
-            city: loc.results[0].admin2.to_owned(),
-            country_code: loc.results[0].country_code.to_owned(),
+            city,
+            country_code,
             latitude: loc.results[0].latitude,
             longitude: loc.results[0].longitude,
+            location: format!("{}, {}", loc.results[0].admin2, loc.results[0].country_code),
+            created_at: SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs(),
         }
     }
 }
 
-fn build_url(name: &str, country_code: &str) -> String {
+fn build_url(n: &str, c: &str) -> String {
     let base_url = "https://geocoding-api.open-meteo.com/v1/search";
     let mut url = Url::parse(base_url).expect("Failed to parse base URL");
 
     url.query_pairs_mut()
-        .append_pair("name", name)
-        .append_pair("countryCode", country_code)
+        .append_pair("name", n)
+        .append_pair("countryCode", c)
         .append_pair("count", "1")
         .append_pair("language", "en")
         .append_pair("format", "json");

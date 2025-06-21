@@ -1,5 +1,6 @@
 use crate::api::{Location, LocationData};
 use isahc::prelude::*;
+use std::time::{SystemTime, UNIX_EPOCH};
 use url::Url;
 
 #[derive(serde::Deserialize, serde::Serialize, Debug)]
@@ -17,7 +18,7 @@ impl Location for IPLocation {
      * Should check X-Rl and X-Ttl headers for rate limiting, but no easy
      * way to notify the user without a panic or error. Can we cache the response in a state file?
      */
-    fn fetch(_name: &str, _country_code: &str) -> LocationData {
+    fn fetch(_: &str, _: &str) -> LocationData {
         let api_url = build_url("33603794");
 
         let mut response = isahc::get(api_url).expect("Failed to send Location request");
@@ -29,10 +30,12 @@ impl Location for IPLocation {
             serde_json::from_str(&body).expect("Failed to parse Location JSON response");
 
         LocationData {
-            city: loc.city,
-            country_code: loc.country_code,
+            city: loc.city.to_owned(),
+            country_code: loc.country_code.to_owned(),
             latitude: loc.lat,
             longitude: loc.lon,
+            location: "".to_string(),
+            created_at: SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs(),
         }
     }
 }
