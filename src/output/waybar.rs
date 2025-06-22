@@ -12,8 +12,8 @@ pub struct WaybarOutput {
 }
 
 const DEFAULT_TEXT_TEMPLATE: &str =
-    "{weather_icon} {temperature}{temperature_unit} 󰖝 {wind_speed}{wind_gusts}";
-const DEFAULT_TOOLTIP_TEMPLATE: &str = "{city}, {country}\n{weather_description}\nFeels like: {feels_like} {temperature_unit}\nHumidity: {humidity}{humidity_unit}\nPressure: {pressure} {pressure_unit}\nWind: {wind_speed}{wind_gusts} {wind_speed_unit} ({wind_compass})\nPrecipitation: {precipitation_sum} {precipitation_unit} ({precipitation_chance}%)\n {sunrise}  {sunset}";
+    "{weather_icon} {temperature_round}{temperature_unit} 󰖝 {wind_speed_round}{wind_gusts_round}";
+const DEFAULT_TOOLTIP_TEMPLATE: &str = "{city}, {country}\n{weather_description}\nFeels like: {feels_like} {temperature_unit}\nHumidity: {humidity}{humidity_unit}\nPressure: {pressure} {pressure_unit}\nWind: {wind_speed}{wind_gusts} {wind_speed_unit} ({wind_compass})\nPrecipitation: {precipitation_sum} {precipitation_unit} ({precipitation_chance}%)\n\n {sunrise}  {sunset}";
 impl Output for WaybarOutput {
     fn new(context: Context) -> Self {
         let mut tt = TinyTemplate::new();
