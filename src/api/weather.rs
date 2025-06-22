@@ -52,20 +52,29 @@ pub struct CurrentUnits {
 #[derive(Default, Serialize, Deserialize, Debug)]
 pub struct Daily {
     pub time: Vec<String>,
+    pub weather_code: Vec<i32>,
     pub sunrise: Vec<String>,
     pub sunset: Vec<String>,
     pub uv_index_max: Vec<f64>,
     pub precipitation_sum: Vec<f64>,
     pub precipitation_hours: Vec<f64>,
+    pub precipitation_probability_max: Vec<i32>,
+    pub temperature_2m_max: Vec<f64>,
+    pub temperature_2m_min: Vec<f64>,
 }
 
 #[derive(Default, Serialize, Deserialize, Debug)]
 pub struct DailyUnits {
+    pub time: String,
+    pub weather_code: String,
     pub sunrise: String,
     pub sunset: String,
     pub uv_index_max: String,
     pub precipitation_sum: String,
     pub precipitation_hours: String,
+    pub precipitation_probability_max: String,
+    pub temperature_2m_max: String,
+    pub temperature_2m_min: String,
 }
 
 impl Weather {
@@ -132,8 +141,9 @@ impl Weather {
         .append_pair("latitude", &lat.to_string())
         .append_pair("longitude", &lon.to_string())
         .append_pair("timezone", "auto")
+        .append_pair("forecast_days", "7")
         .append_pair("current", "temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation,weather_code,pressure_msl")
-        .append_pair("daily", "sunrise,sunset,uv_index_max,precipitation_sum,precipitation_hours")
+        .append_pair("daily", "sunrise,sunset,weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_hours,precipitation_probability_max,uv_index_max")
         .append_pair("temperature_unit", temperature_unit)
         .append_pair("wind_speed_unit", wind_speed_unit)
         .append_pair("precipitation_unit", precipitation_unit);
