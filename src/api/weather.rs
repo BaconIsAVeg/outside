@@ -78,11 +78,12 @@ pub struct DailyUnits {
 }
 
 impl Weather {
-    pub fn get_cached(lat: f64, lon: f64, units: Units) -> Self {
+    pub fn get_cached(lat: f64, lon: f64, units: Units, use_cache: bool) -> Self {
         let now: u64 = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
         let wd = Weather::from_file().unwrap_or_default();
 
-        if wd.latitude == lat
+        if use_cache
+            && wd.latitude == lat
             && wd.longitude == lon
             && wd.created_at > 0
             && now - wd.created_at < 580

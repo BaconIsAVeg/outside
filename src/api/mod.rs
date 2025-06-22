@@ -21,11 +21,11 @@ pub struct LocationData {
 }
 
 impl LocationData {
-    pub fn get_cached(l: String) -> Self {
+    pub fn get_cached(l: String, use_cache: bool) -> Self {
         let now: u64 = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
         let fd = LocationData::from_file().unwrap_or_default();
 
-        if fd.location == l && fd.created_at > 0 && now - fd.created_at < 3600 {
+        if use_cache && fd.location == l && fd.created_at > 0 && now - fd.created_at < 3600 {
             if cfg!(debug_assertions) {
                 println!("Using cached location data: {:#?}", fd);
             }

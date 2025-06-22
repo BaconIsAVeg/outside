@@ -10,28 +10,29 @@ pub mod utils;
 fn main() {
     let xdg_dirs = xdg::BaseDirectories::with_prefix(env!("CARGO_PKG_NAME"));
 
-    let configuration =
+    let s =
         settings::Settings::build(xdg_dirs.find_config_files("config.yaml"), std::env::args_os())
             .unwrap();
 
-    let units = match configuration.units {
+    let units = match s.units {
         settings::Units::Metric => units::Units::metric(),
         settings::Units::Imperial => units::Units::imperial(),
     };
 
-    let location: LocationData = LocationData::get_cached(configuration.location.to_owned());
+    let location: LocationData = LocationData::get_cached(s.location.to_owned(), s.use_cache);
 
-    let weather = weather::Weather::get_cached(location.latitude, location.longitude, units);
+    let weather =
+        weather::Weather::get_cached(location.latitude, location.longitude, units, s.use_cache);
 
     if cfg!(debug_assertions) {
-        println!("{:#?}", configuration);
+        println!("{:#?}", s);
         // println!("{:#?}", weather.current);
         // println!("{:#?}", weather.daily);
     }
 
     let context = context::Context::build(weather, location);
 
-    match configuration.output_format {
+    match s.output_format {
         settings::OutputFormat::Simple => {
             let output = output::render_output::<output::simple::SimpleOutput>(context);
             println!("{}", output);

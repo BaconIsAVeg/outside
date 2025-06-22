@@ -37,4 +37,8 @@ pub struct Settings {
 
     #[cli_settings_clap = "#[arg(short, long, help = \"Desired output format\")]"]
     pub output_format: OutputFormat,
+
+    #[cli_settings_clap = "#[arg(long, help = \"Don't use cached location and weather data\")]"]
+    #[cli_settings_default = "true"]
+    pub use_cache: bool,
 }
