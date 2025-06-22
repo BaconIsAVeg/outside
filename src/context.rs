@@ -1,6 +1,7 @@
 use crate::api::LocationData;
 use crate::utils::mappings;
 use crate::weather::Weather;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 #[derive(serde::Deserialize, serde::Serialize, Debug)]
 pub struct Context {
@@ -28,10 +29,13 @@ pub struct Context {
     pub precipitation: f64,
     pub precipitation_unit: String,
     pub precipitation_hours: f64,
+    pub cache_age: u64,
 }
 
 impl Context {
     pub fn build(weather: Weather, location: LocationData) -> Self {
+        let now: u64 = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
+
         let current = &weather.current;
         let daily = &weather.daily;
         let daily_units = &weather.daily_units;
@@ -42,10 +46,11 @@ impl Context {
         let weather_description = mappings::weather_description(current.weather_code);
         let weather_icon = mappings::weather_code2icon(current.weather_code);
 
+        let cache_age = now - weather.created_at;
+
         /*
          * TODO:
          * Convert sunrise and sunset to local time
-         * Convert wind direction to an 8 point compass direction
          */
         Context {
             city: location.city,
@@ -72,6 +77,7 @@ impl Context {
             precipitation: daily.precipitation_sum[0],
             precipitation_unit: daily_units.precipitation_sum.clone(),
             precipitation_hours: daily.precipitation_hours[0],
+            cache_age,
         }
     }
 }
