@@ -1,4 +1,4 @@
-edition = "2024"
+edition = "2021"
 hard_tabs = false
 max_width = 110
 tab_spaces = 4

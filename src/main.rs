@@ -28,10 +28,10 @@ fn main() {
     }
 
     let output = match s.output_format {
-        OutputFormat::Simple => render_output::<simple::SimpleOutput>(context),
-        OutputFormat::Waybar => render_output::<waybar::WaybarOutput>(context),
-        OutputFormat::Json => render_output::<json::JsonOutput>(context),
-        OutputFormat::Detailed => render_output::<detailed::DetailedOutput>(context),
+        OutputFormat::Simple => render_output::<simple::SimpleOutput>(context, s.clone()),
+        OutputFormat::Waybar => render_output::<waybar::WaybarOutput>(context, s.clone()),
+        OutputFormat::Json => render_output::<json::JsonOutput>(context, s.clone()),
+        OutputFormat::Detailed => render_output::<detailed::DetailedOutput>(context, s.clone()),
     };
 
     println!("{}", output);

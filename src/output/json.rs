@@ -1,5 +1,6 @@
 use crate::context::Context;
 use crate::output::Output;
+use crate::Settings;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -8,7 +9,7 @@ pub struct JsonOutput {
 }
 
 impl Output for JsonOutput {
-    fn new(context: Context) -> Self {
+    fn new(context: Context, _: Settings) -> Self {
         let template = serde_json::to_string(&context)
             .unwrap_or_else(|_| "{{\"error\": \"Unable to serialize Context\"}}".to_string());
         JsonOutput { template }
