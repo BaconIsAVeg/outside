@@ -18,6 +18,14 @@ pub enum OutputFormat {
     Waybar = 3,
 }
 
+#[derive(Clone, Debug, Deserialize, Default)]
+pub struct WaybarConfig {
+    pub text: String,
+    pub tooltip: String,
+    pub hot_temperature: i32,
+    pub cold_temperature: i32,
+}
+
 #[derive(Debug, Clone)]
 #[cli_settings]
 #[cli_settings_file = "#[serde_with::serde_as]#[derive(serde::Deserialize)]"]
@@ -38,4 +46,7 @@ pub struct Settings {
     #[cli_settings_clap = "#[arg(long, help = \"Don't use cached location and weather data\")]"]
     #[cli_settings_default = "true"]
     pub use_cache: bool,
+
+    #[cli_settings_file]
+    pub waybar: WaybarConfig,
 }

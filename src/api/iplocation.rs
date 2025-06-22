@@ -1,9 +1,10 @@
 use crate::api::{Location, LocationData};
 use isahc::prelude::*;
+use serde::{Deserialize, Serialize};
 use std::time::{SystemTime, UNIX_EPOCH};
 use url::Url;
 
-#[derive(serde::Deserialize, serde::Serialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct IPLocation {
     pub city: String,

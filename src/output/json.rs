@@ -1,7 +1,8 @@
 use crate::context::Context;
 use crate::output::Output;
+use serde::{Deserialize, Serialize};
 
-#[derive(serde::Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct JsonOutput {
     pub template: String,
 }

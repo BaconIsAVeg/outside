@@ -1,19 +1,38 @@
 use crate::context::Context;
 use crate::output::Output;
+use serde::{Deserialize, Serialize};
+use tinytemplate::TinyTemplate;
 
-#[derive(serde::Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct WaybarOutput {
-    pub template: String,
+    pub text: String,
+    pub tooltip: String,
+    pub class: Vec<String>,
+    pub percentage: i8,
 }
 
+const DEFAULT_TEXT_TEMPLATE: &str =
+    "{weather_icon} {temperature}{temperature_unit} 󰖝 {wind_speed}{wind_gusts}";
+const DEFAULT_TOOLTIP_TEMPLATE: &str = "{city}, {country}\n{weather_description}\nFeels like: {feels_like} {temperature_unit}\nHumidity: {humidity}{humidity_unit}\nPressure: {pressure} {pressure_unit}\nWind: {wind_speed}{wind_gusts} {wind_speed_unit} ({wind_compass})\nPrecipitation: {precipitation_sum} {precipitation_unit} ({precipitation_chance}%)\n {sunrise}  {sunset}";
 impl Output for WaybarOutput {
     fn new(context: Context) -> Self {
-        let template =
-            format!("{} {}{}", context.weather_icon, context.temperature, context.temperature_unit);
-        WaybarOutput { template }
+        let mut tt = TinyTemplate::new();
+        let text_template = DEFAULT_TEXT_TEMPLATE;
+        let tooltip_template = DEFAULT_TOOLTIP_TEMPLATE;
+
+        tt.add_template("text", text_template).expect("Unable to add text template");
+        tt.add_template("tooltip", tooltip_template).expect("Unable to add tooltip template");
+
+        // TODO: Add the hot/cold/inclement weather classes
+        let text =
+            tt.render("text", &context).unwrap_or_else(|_| "Error rendering text template".to_string());
+        let tooltip =
+            tt.render("tooltip", &context).unwrap_or_else(|_| "Error rendering tooltip template".to_string());
+
+        WaybarOutput { text, tooltip, class: vec!["".to_string()], percentage: 100 }
     }
 
     fn render(&self) -> String {
-        self.template.clone()
+        serde_json::to_string(self).unwrap()
     }
 }

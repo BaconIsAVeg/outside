@@ -1,9 +1,10 @@
 use crate::api::{Location, LocationData};
 use isahc::prelude::*;
+use serde::{Deserialize, Serialize};
 use std::time::{SystemTime, UNIX_EPOCH};
 use url::Url;
 
-#[derive(serde::Deserialize, serde::Serialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct GeoLocation {
     pub results: Vec<Results>,
@@ -42,6 +43,7 @@ impl Location for GeoLocation {
     }
 }
 
+// TODO: Refactor this into a common function
 fn build_url(n: &str, c: &str) -> String {
     let base_url = "https://geocoding-api.open-meteo.com/v1/search";
     let mut url = Url::parse(base_url).expect("Unable to parse base URL");

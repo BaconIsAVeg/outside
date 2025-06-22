@@ -27,7 +27,7 @@ impl LocationData {
 
         if use_cache && fd.location == l && fd.created_at > 0 && now - fd.created_at < 3600 {
             if cfg!(debug_assertions) {
-                println!("Using cached location data: {:#?}", fd);
+                println!("Using cached location data");
             }
             return fd;
         }
@@ -39,7 +39,7 @@ impl LocationData {
         match data.save_atomic() {
             Ok(_) => {
                 if cfg!(debug_assertions) {
-                    println!("Wrote location data to disk: {:#?}", data);
+                    println!("Wrote location data to disk");
                 }
             },
             Err(e) => eprintln!("Unable to save location data to disk: {:#?}", e),
@@ -48,7 +48,7 @@ impl LocationData {
         data
     }
 
-    pub fn lookup(l: String) -> Self {
+    fn lookup(l: String) -> Self {
         if !l.is_empty() {
             let parts: Vec<&str> = l.split(',').collect();
             if parts.len() == 2 {

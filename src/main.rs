@@ -22,11 +22,17 @@ fn main() {
     let weather = weather::Weather::get_cached(loc.latitude, loc.longitude, units, s.use_cache);
 
     let context = context::Context::build(weather, loc);
+    if cfg!(debug_assertions) {
+        println!("Context: {:#?}", context);
+        println!("Settings: {:#?}", s);
+    }
+
     let output = match s.output_format {
         OutputFormat::Simple => render_output::<simple::SimpleOutput>(context),
         OutputFormat::Waybar => render_output::<waybar::WaybarOutput>(context),
         OutputFormat::Json => render_output::<json::JsonOutput>(context),
         OutputFormat::Detailed => render_output::<detailed::DetailedOutput>(context),
     };
+
     println!("{}", output);
 }

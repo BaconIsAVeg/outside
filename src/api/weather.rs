@@ -93,7 +93,7 @@ impl Weather {
             && now - wd.created_at < 580
         {
             if cfg!(debug_assertions) {
-                println!("Using cached weather data: {:#?}", wd);
+                println!("Using cached weather data");
             }
             return wd;
         }
@@ -106,7 +106,7 @@ impl Weather {
         match data.save_atomic() {
             Ok(_) => {
                 if cfg!(debug_assertions) {
-                    println!("Wrote weather data to disk: {:#?}", data);
+                    println!("Wrote weather data to disk");
                 }
             },
             Err(e) => eprintln!("Unable to save weather data to disk: {:#?}", e),
@@ -115,10 +115,10 @@ impl Weather {
         data
     }
 
-    pub fn fetch(lat: f64, lon: f64, units: Units) -> Self {
-        let api_url = Self::build_url(
-            lat,
-            lon,
+    fn fetch(lat: f64, lon: f64, units: Units) -> Self {
+        let api_url = build_url(
+            lat.to_string().as_str(),
+            lon.to_string().as_str(),
             units.temperature.as_str(),
             units.wind_speed.as_str(),
             units.precipitation.as_str(),
@@ -131,55 +131,55 @@ impl Weather {
         let body = response.text().expect("Unable to read Weather response body");
         serde_json::from_str(&body).expect("Unable to parse Weather JSON response")
     }
+}
 
-    pub fn build_url(
-        lat: f64,
-        lon: f64,
-        temperature_unit: &str,
-        wind_speed_unit: &str,
-        precipitation_unit: &str,
-    ) -> String {
-        let base_url = "https://api.open-meteo.com/v1/forecast";
-        let mut url = Url::parse(base_url).expect("Unable to parse base URL");
+fn build_url(
+    lat: &str,
+    lon: &str,
+    temperature_unit: &str,
+    wind_speed_unit: &str,
+    precipitation_unit: &str,
+) -> String {
+    let base_url = "https://api.open-meteo.com/v1/forecast";
+    let mut url = Url::parse(base_url).expect("Unable to parse base URL");
 
-        let current_fields = string_vec![
-            "temperature_2m",
-            "relative_humidity_2m",
-            "apparent_temperature",
-            "wind_speed_10m",
-            "wind_direction_10m",
-            "wind_gusts_10m",
-            "precipitation",
-            "weather_code",
-            "pressure_msl"
-        ];
+    let current_fields = string_vec![
+        "temperature_2m",
+        "relative_humidity_2m",
+        "apparent_temperature",
+        "wind_speed_10m",
+        "wind_direction_10m",
+        "wind_gusts_10m",
+        "precipitation",
+        "weather_code",
+        "pressure_msl"
+    ];
 
-        let daily_fields = string_vec![
-            "sunrise",
-            "sunset",
-            "weather_code",
-            "temperature_2m_max",
-            "temperature_2m_min",
-            "precipitation_sum",
-            "precipitation_hours",
-            "precipitation_probability_max",
-            "uv_index_max"
-        ];
+    let daily_fields = string_vec![
+        "sunrise",
+        "sunset",
+        "weather_code",
+        "temperature_2m_max",
+        "temperature_2m_min",
+        "precipitation_sum",
+        "precipitation_hours",
+        "precipitation_probability_max",
+        "uv_index_max"
+    ];
 
-        url.query_pairs_mut()
-            .append_pair("latitude", &lat.to_string())
-            .append_pair("longitude", &lon.to_string())
-            .append_pair("timezone", "auto")
-            .append_pair("forecast_days", "7")
-            .append_pair("current", &current_fields.join(","))
-            .append_pair("daily", &daily_fields.join(","))
-            .append_pair("temperature_unit", temperature_unit)
-            .append_pair("wind_speed_unit", wind_speed_unit)
-            .append_pair("precipitation_unit", precipitation_unit);
+    url.query_pairs_mut()
+        .append_pair("latitude", lat)
+        .append_pair("longitude", lon)
+        .append_pair("timezone", "auto")
+        .append_pair("forecast_days", "7")
+        .append_pair("current", &current_fields.join(","))
+        .append_pair("daily", &daily_fields.join(","))
+        .append_pair("temperature_unit", temperature_unit)
+        .append_pair("wind_speed_unit", wind_speed_unit)
+        .append_pair("precipitation_unit", precipitation_unit);
 
-        if cfg!(debug_assertions) {
-            println!("Weather API: {:#?}", url);
-        }
-        url.to_string()
+    if cfg!(debug_assertions) {
+        println!("Weather API: {:#?}", url);
     }
+    url.to_string()
 }
