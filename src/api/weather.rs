@@ -76,7 +76,7 @@ impl Weather {
         if wd.latitude == lat
             && wd.longitude == lon
             && wd.created_at > 0
-            && now - wd.created_at < 600
+            && now - wd.created_at < 580
         {
             if cfg!(debug_assertions) {
                 println!("Using cached weather data: {:#?}", wd);
