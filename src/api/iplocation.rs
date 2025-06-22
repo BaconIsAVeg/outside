@@ -13,21 +13,15 @@ pub struct IPLocation {
 }
 
 impl Location for IPLocation {
-    /*
-     * TODO:
-     * Should check X-Rl and X-Ttl headers for rate limiting, but no easy
-     * way to notify the user without a panic or error. Can we cache the response in a state file?
-     */
     fn fetch(_: &str, _: &str) -> LocationData {
         let api_url = build_url("33603794");
 
-        let mut response = isahc::get(api_url).expect("Failed to send Location request");
+        let mut response = isahc::get(api_url).expect("Unable to request location data");
         if !response.status().is_success() {
-            panic!("Failed to fetch location: {}", response.status());
+            panic!("Unable to fetch location data: {}", response.status());
         }
-        let body = response.text().expect("Failed to read Location response body");
-        let loc: IPLocation =
-            serde_json::from_str(&body).expect("Failed to parse Location JSON response");
+        let body = response.text().expect("Unable to read Location response body");
+        let loc: IPLocation = serde_json::from_str(&body).expect("Unable to parse Location JSON response");
 
         LocationData {
             city: loc.city.to_owned(),
@@ -42,7 +36,7 @@ impl Location for IPLocation {
 
 fn build_url(field_code: &str) -> String {
     let base_url = "http://ip-api.com/json";
-    let mut url = Url::parse(base_url).expect("Failed to parse base URL");
+    let mut url = Url::parse(base_url).expect("Unable to parse base location URL");
 
     url.query_pairs_mut().append_pair("fields", field_code);
 

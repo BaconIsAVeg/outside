@@ -5,6 +5,7 @@ pub mod waybar;
 
 use crate::context::Context;
 
+// TODO: Add TinyTemplate support for rendering templates
 pub trait Output {
     fn new(context: Context) -> Self;
     fn render(&self) -> String;

@@ -10,17 +10,17 @@ pub struct Units {
 impl Units {
     pub fn metric() -> Self {
         Units {
-            temperature: String::from("celsius"),
-            wind_speed: String::from("kmh"),
-            precipitation: String::from("mm"),
+            temperature: "celsius".to_string(),
+            wind_speed: "kmh".to_string(),
+            precipitation: "mm".to_string(),
         }
     }
 
     pub fn imperial() -> Self {
         Units {
-            temperature: String::from("fahrenheit"),
-            wind_speed: String::from("mph"),
-            precipitation: String::from("inch"),
+            temperature: "fahrenheit".to_string(),
+            wind_speed: "mph".to_string(),
+            precipitation: "inch".to_string(),
         }
     }
 }

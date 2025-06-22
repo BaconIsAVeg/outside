@@ -21,13 +21,12 @@ impl Location for GeoLocation {
     fn fetch(n: &str, c: &str) -> LocationData {
         let api_url = build_url(n, c);
 
-        let mut response = isahc::get(api_url).expect("Failed to send Location request");
+        let mut response = isahc::get(api_url).expect("Unable to send Location request");
         if !response.status().is_success() {
-            panic!("Failed to fetch location: {}", response.status());
+            panic!("Unable to fetch location: {}", response.status());
         }
-        let body = response.text().expect("Failed to read Location response body");
-        let loc: GeoLocation =
-            serde_json::from_str(&body).expect("Failed to parse Location JSON response");
+        let body = response.text().expect("Unable to read Location response body");
+        let loc: GeoLocation = serde_json::from_str(&body).expect("Unable to parse Location JSON response");
 
         let city = loc.results[0].admin2.to_owned();
         let country_code = loc.results[0].country_code.to_owned();
@@ -45,7 +44,7 @@ impl Location for GeoLocation {
 
 fn build_url(n: &str, c: &str) -> String {
     let base_url = "https://geocoding-api.open-meteo.com/v1/search";
-    let mut url = Url::parse(base_url).expect("Failed to parse base URL");
+    let mut url = Url::parse(base_url).expect("Unable to parse base URL");
 
     url.query_pairs_mut()
         .append_pair("name", n)

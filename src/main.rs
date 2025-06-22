@@ -1,5 +1,8 @@
 use crate::api::{weather, LocationData};
+use crate::output::*;
+use crate::settings::{OutputFormat, Settings, Units};
 use crate::utils::units;
+use xdg::BaseDirectories;
 
 pub mod api;
 pub mod context;
@@ -8,46 +11,22 @@ pub mod settings;
 pub mod utils;
 
 fn main() {
-    let xdg_dirs = xdg::BaseDirectories::with_prefix(env!("CARGO_PKG_NAME"));
-
-    let s =
-        settings::Settings::build(xdg_dirs.find_config_files("config.yaml"), std::env::args_os())
-            .unwrap();
-
+    let dirs = BaseDirectories::with_prefix(env!("CARGO_PKG_NAME"));
+    let s = Settings::build(dirs.find_config_files("config.yaml"), std::env::args_os()).unwrap();
     let units = match s.units {
-        settings::Units::Metric => units::Units::metric(),
-        settings::Units::Imperial => units::Units::imperial(),
+        Units::Metric => units::Units::metric(),
+        Units::Imperial => units::Units::imperial(),
     };
 
-    let location: LocationData = LocationData::get_cached(s.location.to_owned(), s.use_cache);
+    let loc = LocationData::get_cached(s.location.to_owned(), s.use_cache);
+    let weather = weather::Weather::get_cached(loc.latitude, loc.longitude, units, s.use_cache);
 
-    let weather =
-        weather::Weather::get_cached(location.latitude, location.longitude, units, s.use_cache);
-
-    if cfg!(debug_assertions) {
-        println!("{:#?}", s);
-        // println!("{:#?}", weather.current);
-        // println!("{:#?}", weather.daily);
-    }
-
-    let context = context::Context::build(weather, location);
-
-    match s.output_format {
-        settings::OutputFormat::Simple => {
-            let output = output::render_output::<output::simple::SimpleOutput>(context);
-            println!("{}", output);
-        },
-        settings::OutputFormat::Waybar => {
-            let output = output::render_output::<output::waybar::WaybarOutput>(context);
-            println!("{}", output);
-        },
-        settings::OutputFormat::Json => {
-            let output = output::render_output::<output::json::JsonOutput>(context);
-            println!("{}", output);
-        },
-        settings::OutputFormat::Detailed => {
-            let output = output::render_output::<output::detailed::DetailedOutput>(context);
-            println!("{}", output);
-        },
-    }
+    let context = context::Context::build(weather, loc);
+    let output = match s.output_format {
+        OutputFormat::Simple => render_output::<simple::SimpleOutput>(context),
+        OutputFormat::Waybar => render_output::<waybar::WaybarOutput>(context),
+        OutputFormat::Json => render_output::<json::JsonOutput>(context),
+        OutputFormat::Detailed => render_output::<detailed::DetailedOutput>(context),
+    };
+    println!("{}", output);
 }

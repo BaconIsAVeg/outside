@@ -42,7 +42,7 @@ impl LocationData {
                     println!("Wrote location data to disk: {:#?}", data);
                 }
             },
-            Err(e) => eprintln!("Failed saving location data to disk: {:#?}", e),
+            Err(e) => eprintln!("Unable to save location data to disk: {:#?}", e),
         }
 
         data

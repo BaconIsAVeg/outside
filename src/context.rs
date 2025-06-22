@@ -34,6 +34,7 @@ pub struct Context {
 
 impl Context {
     pub fn build(weather: Weather, location: LocationData) -> Self {
+        // TODO: Figure out how to make this global
         let now: u64 = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
 
         let current = &weather.current;
@@ -48,10 +49,7 @@ impl Context {
 
         let cache_age = now - weather.created_at;
 
-        /*
-         * TODO:
-         * Convert sunrise and sunset to local time
-         */
+        // TODO: Convert sunrise and sunset to local time
         Context {
             city: location.city,
             country: location.country_code,

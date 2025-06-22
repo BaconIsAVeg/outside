@@ -23,10 +23,7 @@ pub enum OutputFormat {
 #[cli_settings_file = "#[serde_with::serde_as]#[derive(serde::Deserialize)]"]
 #[cli_settings_clap = "#[derive(clap::Parser)]#[command(name = \"outside\", version)]"]
 pub struct Settings {
-    /*
-     * TODO:
-     * Break config file settings out into sections for each output format
-     */
+    // TODO: Break config file settings out into sections for each output format
     #[cli_settings_file]
     #[cli_settings_clap = "#[arg(short, long, help = \"'City, CA' or leave blank to auto-detect\")]"]
     pub location: String,

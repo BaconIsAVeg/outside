@@ -1,6 +1,6 @@
 edition = "2024"
 hard_tabs = false
-max_width = 100
+max_width = 110
 tab_spaces = 4
 reorder_imports = true
 match_block_trailing_comma = true
