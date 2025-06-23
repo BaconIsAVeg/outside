@@ -28,18 +28,6 @@ clippy:
 coverage:
     cargo tarpaulin --skip-clean --all-targets --include-tests --out Html --output-dir dev/
 
-# Clean up build artifacts
-clean:
-    @echo "{{BLACK + BG_GREEN}}Cleaning up build artifacts for {{NAME}}...{{NORMAL}}"
-    rm -rf dist
-    rm -f {{ZIP_NAME}}
-    rm -f *.tar.zst
-    rm -f *.tar.gz
-    rm -rf pkg
-    rm -rf src/target
-    rm -rf src/{{NAME}}-{{VER}}
-    rm -f src/{{NAME}}-{{VER}}.tar.gz
-
 # Build the package
 [doc('Run `just VER=<version> build` to update the version number')]
 build: setver
@@ -56,23 +44,19 @@ install: test build
 package: test build
     @echo "{{BLACK + BG_GREEN}}Packaging {{NAME}} version {{VER}}...{{NORMAL}}"
     mkdir -p dist
-    cp docs/LICENSE dist/
+    cp LICENSE dist/
     cp README.md dist/
     cp target/release/{{NAME}} dist/
     tar -czf {{ZIP_NAME}} -C dist .
 
 # Publish the packages
-publish: test build publish-gitlab clean publish-crates
+publish: test build publish-github clean publish-crates
     @echo "{{BLACK + BG_BLUE}}Done publishing packages!{{NORMAL}}"
 
-# Release the package to Gitlab
-publish-gitlab: test build package
-    @echo "{{BLACK + BG_GREEN}}Releasing package {{ZIP_NAME}} to Gitlab...{{NORMAL}}"
-    glab release create \
-        {{VER}} \
-        --name "{{NAME}} {{VER}}" \
-        --notes "Release of {{NAME}} version {{VER}}" \
-        "./{{ZIP_NAME}}"
+# Release the package to Github
+publish-github: test build package
+    @echo "{{BLACK + BG_GREEN}}Releasing package {{ZIP_NAME}} to Github...{{NORMAL}}"
+    # WIP
 
 publish-crates: test build
     @echo "{{BLACK + BG_GREEN}}Releasing package {{ZIP_NAME}} to crates.io...{{NORMAL}}"

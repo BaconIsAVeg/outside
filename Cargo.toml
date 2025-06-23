@@ -2,6 +2,14 @@
 name = "outside"
 version = "0.1.0"
 edition = "2021"
+authors = ["BaconIsAVeg <baconisaveg@fastmail.ca>"]
+license = "AGPL-3.0-or-later"
+readme = "README.md"
+description = "A multi-purpose CLI weather client that uses the Open-Meteo API."
+homepage = "https://github.com/BaconIsAVeg/outside"
+repository = "https://github.com/BaconIsAVeg/outside"
+keywords = ["cli", "weather"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 isahc = { version = "1.7.2", features = ["json"] }
