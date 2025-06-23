@@ -50,7 +50,7 @@ package: test build
     tar -czf {{ZIP_NAME}} -C dist .
 
 # Publish the packages
-publish: test build publish-github clean publish-crates
+publish: test build publish-github publish-crates
     @echo "{{BLACK + BG_BLUE}}Done publishing packages!{{NORMAL}}"
 
 # Release the package to Github

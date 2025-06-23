@@ -45,7 +45,7 @@ impl Output for WaybarOutput {
         }
 
         match context.weather_code {
-            40 | 49 => classes.push("fog".to_string()),
+            40..=49 => classes.push("fog".to_string()),
             70..=79 => classes.push("snow".to_string()),
             50..=69 | 80..=99 => classes.push("rain".to_string()),
             _ => (),
