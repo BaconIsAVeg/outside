@@ -23,8 +23,8 @@ pub enum OutputFormat {
 pub struct WaybarConfig {
     pub text: Option<String>,
     pub tooltip: Option<String>,
-    pub hot_temperature: Option<i32>,
-    pub cold_temperature: Option<i32>,
+    pub hot_temperature: Option<f64>,
+    pub cold_temperature: Option<f64>,
 }
 
 #[serde_with::skip_serializing_none]
