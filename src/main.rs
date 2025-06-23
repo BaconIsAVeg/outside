@@ -1,8 +1,6 @@
 use crate::api::{weather, LocationData};
 use crate::output::*;
 use crate::settings::{OutputFormat, Settings, Units};
-use crate::utils::units;
-use xdg::BaseDirectories;
 
 pub mod api;
 pub mod context;
@@ -11,15 +9,16 @@ pub mod settings;
 pub mod utils;
 
 fn main() {
-    let dirs = BaseDirectories::with_prefix(env!("CARGO_PKG_NAME"));
-    let s = Settings::build(dirs.find_config_files("config.yaml"), std::env::args_os()).unwrap();
-    let units = match s.units {
-        Units::Metric => units::Units::metric(),
-        Units::Imperial => units::Units::imperial(),
-    };
+    let dirs = xdg::BaseDirectories::with_prefix(env!("CARGO_PKG_NAME"));
+    dirs.create_cache_directory("").unwrap_or_else(|e| {
+        eprintln!("Unable to create cache directory: {}", e);
+        std::process::exit(1);
+    });
 
-    let loc = LocationData::get_cached(s.location.to_owned(), s.use_cache);
-    let weather = weather::Weather::get_cached(loc.latitude, loc.longitude, units, s.use_cache);
+    let s = Settings::build(dirs.find_config_files("config.yaml"), std::env::args_os()).unwrap();
+
+    let loc = LocationData::get_cached(s.clone());
+    let weather = weather::Weather::get_cached(loc.latitude, loc.longitude, s.clone());
 
     let context = context::Context::build(weather, loc);
     if cfg!(debug_assertions) {

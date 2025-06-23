@@ -1,7 +1,8 @@
 use crate::api::{Location, LocationData};
+use crate::utils::*;
+
 use isahc::prelude::*;
 use serde::{Deserialize, Serialize};
-use std::time::{SystemTime, UNIX_EPOCH};
 use url::Url;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -38,7 +39,7 @@ impl Location for GeoLocation {
             latitude: loc.results[0].latitude,
             longitude: loc.results[0].longitude,
             location: format!("{}, {}", loc.results[0].admin2, loc.results[0].country_code),
-            created_at: SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs(),
+            created_at: get_now(),
         }
     }
 }

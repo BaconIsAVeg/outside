@@ -1,16 +1,19 @@
 pub mod geolocation;
 pub mod iplocation;
 pub mod weather;
-use disk::*;
+
+use crate::utils::*;
+use crate::Settings;
+
+use savefile::prelude::*;
+use savefile_derive::Savefile;
 use serde::{Deserialize, Serialize};
-use std::time::{SystemTime, UNIX_EPOCH};
 
 pub trait Location {
     fn fetch(name: &str, country_code: &str) -> LocationData;
 }
 
-json!(LocationData, Dir::Data, env!("CARGO_PKG_NAME"), "location", "data");
-#[derive(Default, Deserialize, Serialize, Debug)]
+#[derive(Default, Deserialize, Serialize, Debug, Savefile)]
 pub struct LocationData {
     pub city: String,
     pub country_code: String,
@@ -21,11 +24,18 @@ pub struct LocationData {
 }
 
 impl LocationData {
-    pub fn get_cached(l: String, use_cache: bool) -> Self {
-        let now: u64 = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
-        let fd = LocationData::from_file().unwrap_or_default();
+    pub fn get_cached(s: Settings) -> Self {
+        let filename = get_file_cache("location", &s.location, s.units);
+        if cfg!(debug_assertions) {
+            println!("Location cache file: {}", filename);
+        }
+        let now = get_now();
 
-        if use_cache && fd.location == l && fd.created_at > 0 && now - fd.created_at < 3600 {
+        let fd: LocationData = load_file(&filename, 0).unwrap_or_default();
+        let l = s.location.to_owned();
+
+        // Cache lifetime is 4 hours (14400 seconds)
+        if fd.location == l && fd.created_at > 0 && now - fd.created_at < 14400 {
             if cfg!(debug_assertions) {
                 println!("Using cached location data");
             }
@@ -36,7 +46,7 @@ impl LocationData {
         data.latitude = format!("{:.1}", data.latitude).parse().unwrap_or(0.0);
         data.longitude = format!("{:.1}", data.longitude).parse().unwrap_or(0.0);
 
-        match data.save_atomic() {
+        match save_file(&filename, 0, &data) {
             Ok(_) => {
                 if cfg!(debug_assertions) {
                     println!("Wrote location data to disk");

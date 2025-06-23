@@ -1,8 +1,8 @@
 use crate::api::LocationData;
 use crate::utils::conversions;
 use crate::utils::mappings;
+use crate::utils::*;
 use crate::weather::Weather;
-use std::time::{SystemTime, UNIX_EPOCH};
 
 #[derive(serde::Deserialize, serde::Serialize, Debug)]
 pub struct Context {
@@ -42,7 +42,7 @@ pub struct Context {
 impl Context {
     pub fn build(weather: Weather, location: LocationData) -> Self {
         // TODO: Figure out how to make this global
-        let now: u64 = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
+        let now = get_now();
 
         let current = &weather.current;
         let daily = &weather.daily;

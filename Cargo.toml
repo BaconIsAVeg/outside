@@ -1,6 +1,6 @@
 [package]
 name = "outside"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["BaconIsAVeg <baconisaveg@fastmail.ca>"]
 license = "AGPL-3.0-or-later"
@@ -27,7 +27,8 @@ chrono = "0.4.41"
 
 tinytemplate = "1.2.1"
 xdg = "3.0.0"
-disk = { version = "0.1.21", features = ["json", "yaml"] }
+savefile = "0.18"
+savefile-derive = "0.18"
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(tarpaulin_include)'] }

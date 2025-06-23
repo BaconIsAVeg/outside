@@ -1,7 +1,8 @@
 use crate::api::{Location, LocationData};
+use crate::utils::*;
+
 use isahc::prelude::*;
 use serde::{Deserialize, Serialize};
-use std::time::{SystemTime, UNIX_EPOCH};
 use url::Url;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -30,7 +31,7 @@ impl Location for IPLocation {
             latitude: loc.lat,
             longitude: loc.lon,
             location: "".to_string(),
-            created_at: SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs(),
+            created_at: get_now(),
         }
     }
 }

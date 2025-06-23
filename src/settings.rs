@@ -1,8 +1,8 @@
 use clap::ValueEnum;
 use cli_settings_derive::cli_settings;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(ValueEnum, Clone, Debug, Deserialize, Default)]
+#[derive(ValueEnum, Clone, Debug, Serialize, Deserialize, Default)]
 pub enum Units {
     #[default]
     Metric = 0,
@@ -48,10 +48,6 @@ pub struct Settings {
 
     #[cli_settings_clap = "#[arg(short, long, help = \"Desired output format\")]"]
     pub output_format: OutputFormat,
-
-    #[cli_settings_clap = "#[arg(long, help = \"Don't use cached location and weather data\")]"]
-    #[cli_settings_default = "true"]
-    pub use_cache: bool,
 
     #[cli_settings_file]
     pub simple: SimpleConfig,

@@ -1,16 +1,18 @@
-use crate::utils::units::Units;
-use disk::*;
+use crate::utils::*;
+use crate::Settings;
+use crate::Units;
+
 use isahc::prelude::*;
+use savefile::prelude::*;
+use savefile_derive::Savefile;
 use serde::{Deserialize, Serialize};
-use std::time::{SystemTime, UNIX_EPOCH};
 use url::Url;
 
 macro_rules! string_vec {
     ($($x:expr),*) => (vec![$($x.to_string()),*]);
 }
 
-json!(Weather, Dir::Data, env!("CARGO_PKG_NAME"), "weather", "data");
-#[derive(Default, Serialize, Deserialize, Debug)]
+#[derive(Default, Serialize, Deserialize, Debug, Savefile)]
 pub struct Weather {
     pub current: Current,
     pub current_units: CurrentUnits,
@@ -25,7 +27,7 @@ pub struct Weather {
     pub created_at: u64,
 }
 
-#[derive(Default, Serialize, Deserialize, Debug)]
+#[derive(Default, Serialize, Deserialize, Debug, Savefile)]
 pub struct Current {
     pub apparent_temperature: f64,
     pub interval: i32,
@@ -39,7 +41,7 @@ pub struct Current {
     pub wind_gusts_10m: f64,
 }
 
-#[derive(Default, Serialize, Deserialize, Debug)]
+#[derive(Default, Serialize, Deserialize, Debug, Savefile)]
 pub struct CurrentUnits {
     pub apparent_temperature: String,
     pub interval: String,
@@ -53,7 +55,7 @@ pub struct CurrentUnits {
     pub wind_gusts_10m: String,
 }
 
-#[derive(Default, Serialize, Deserialize, Debug)]
+#[derive(Default, Serialize, Deserialize, Debug, Savefile)]
 pub struct Daily {
     pub time: Vec<String>,
     pub weather_code: Vec<i32>,
@@ -67,7 +69,7 @@ pub struct Daily {
     pub temperature_2m_min: Vec<f64>,
 }
 
-#[derive(Default, Serialize, Deserialize, Debug)]
+#[derive(Default, Serialize, Deserialize, Debug, Savefile)]
 pub struct DailyUnits {
     pub time: String,
     pub weather_code: String,
@@ -82,28 +84,33 @@ pub struct DailyUnits {
 }
 
 impl Weather {
-    pub fn get_cached(lat: f64, lon: f64, units: Units, use_cache: bool) -> Self {
-        let now: u64 = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
-        let wd = Weather::from_file().unwrap_or_default();
+    pub fn get_cached(lat: f64, lon: f64, s: Settings) -> Self {
+        let filename = get_file_cache("weather", &s.location, s.units.to_owned());
+        if cfg!(debug_assertions) {
+            println!("Weather cache file: {}", filename);
+        }
+        let now = get_now();
 
-        if use_cache
-            && wd.latitude == lat
-            && wd.longitude == lon
-            && wd.created_at > 0
-            && now - wd.created_at < 580
-        {
+        let unit_strings = match s.units.to_owned() {
+            Units::Metric => unitstrings::UnitStrings::metric(),
+            Units::Imperial => unitstrings::UnitStrings::imperial(),
+        };
+
+        let wd: Weather = load_file(&filename, 0).unwrap_or_default();
+
+        if wd.latitude == lat && wd.longitude == lon && wd.created_at > 0 && now - wd.created_at < 580 {
             if cfg!(debug_assertions) {
                 println!("Using cached weather data");
             }
             return wd;
         }
 
-        let mut data = Self::fetch(lat, lon, units);
+        let mut data = Self::fetch(lat, lon, unit_strings);
         data.latitude = format!("{:.1}", data.latitude).parse().unwrap_or(0.0);
         data.longitude = format!("{:.1}", data.longitude).parse().unwrap_or(0.0);
         data.created_at = now;
 
-        match data.save_atomic() {
+        match save_file(&filename, 0, &data) {
             Ok(_) => {
                 if cfg!(debug_assertions) {
                     println!("Wrote weather data to disk");
@@ -115,7 +122,7 @@ impl Weather {
         data
     }
 
-    fn fetch(lat: f64, lon: f64, units: Units) -> Self {
+    fn fetch(lat: f64, lon: f64, units: unitstrings::UnitStrings) -> Self {
         let api_url = build_url(
             lat.to_string().as_str(),
             lon.to_string().as_str(),

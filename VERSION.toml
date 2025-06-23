@@ -5,7 +5,7 @@ file = "Cargo.toml"
 expr = 'version = "(.*)"'
 
 [package.outside]
-version = "0.1.0"
+version = "0.2.0"
 
 [[package.outside.files]]
 file = "Cargo.toml"
