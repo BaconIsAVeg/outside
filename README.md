@@ -16,6 +16,88 @@ Options:
 
 The `--location` should be a string with your city and country code, e.g. `London, GB` or `New York, US`. If this value is not provided, http://ip-api.com will be used to auto-detect your location based on your IP address.  Location data is cached for one hour, and weather data is cached for 10 minutes to reduce API calls. You can disable caching by setting `--use-cache false`.
 
+## Example Outputs
+
+### Simple
+
+    ❯ outside
+    󰖓 11°C 󰖝 412
+
+### Detailed
+
+    ❯ outside -o detailed
+    Edmonton, CA
+    Current:     10.9°C Thunderstorm
+    Feels Like:  10.0°C
+    Humidity:    89%
+    Pressure:    1015.7hPa
+    Wind:        4.4km/h with gusts up to 11.5km/h (N)
+
+    ❯ outside -l 'Dusseldorf, DE' -o detailed --use-cache false
+    Düsseldorf District, DE
+    Current:     19.6°C Overcast
+    Feels Like:  17.9°C
+    Humidity:    65%
+    Pressure:    1011.3hPa
+    Wind:        18.4km/h with gusts up to 34.2km/h (SW)
+
+    ❯ outside -l 'Los Angeles, US' -o detailed -u imperial --use-cache false
+    Los Angeles, US
+    Current:     63.9°F Clear sky
+    Feels Like:  65.1°F
+    Humidity:    84%
+    Pressure:    1012.8hPa
+    Wind:        4.2mp/h with gusts up to 5.8mp/h (SW)
+
+### JSON
+
+    ❯ outside -o json | jq
+    {
+      "city": "Edmonton",
+      "country": "CA",
+      "temperature": 10.9,
+      "temperature_round": "11",
+      "feels_like": 10.0,
+      "feels_like_round": "10",
+      "temperature_unit": "°C",
+      "wind_speed": 4.4,
+      "wind_speed_round": "4",
+      "wind_gusts": 11.5,
+      "wind_gusts_round": "12",
+      "wind_speed_unit": "km/h",
+      "wind_direction": 351,
+      "wind_compass": "N",
+      "weather_code": 95,
+      "weather_icon": "󰖓",
+      "weather_description": "Thunderstorm",
+      "openweather_code": "11d",
+      "humidity": 89,
+      "humidity_unit": "%",
+      "pressure": 1015.7,
+      "pressure_round": "1016",
+      "pressure_unit": "hPa",
+      "sunrise": "05:05am",
+      "sunset": "10:07pm",
+      "uv_index": 7.0,
+      "precipitation_chance": 83,
+      "precipitation_sum": 4.9,
+      "precipitation_unit": "mm",
+      "precipitation_hours": 8.0,
+      "cache_age": 413
+    }
+
+### Waybar
+
+    ❯ outside -o waybar | jq
+    {
+      "text": "󰖓 11°C 󰖝 412",
+      "tooltip": "Edmonton, CA\nThunderstorm\nFeels like: 10.0 °C\nHumidity: 89%\nPressure: 1015.7 hPa\nWind: 4.411.5 km/h (N)\nPrecipitation: 4.9 mm (83%)\n\n 05:05am  10:07pm",
+      "class": [
+        "rain"
+      ],
+      "percentage": 100
+    }
+
 # Configuration Options
 
 As an alternative to passing the command line options, the application will look for the following configuration file:
