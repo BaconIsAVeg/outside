@@ -36,6 +36,47 @@ waybar:
   cold_temperature: 0
 ```
 
+### Available Template Variables
+
+You can run `outside -o json` to see a list of all the current variables and their values.
+
+```bash
+$ outside -o json | jq
+{
+  "city": "Edmonton",
+  "country": "CA",
+  "temperature": 10.9,
+  "temperature_round": "11",
+  "feels_like": 10.0,
+  "feels_like_round": "10",
+  "temperature_unit": "°C",
+  "wind_speed": 4.4,
+  "wind_speed_round": "4",
+  "wind_gusts": 11.5,
+  "wind_gusts_round": "12",
+  "wind_speed_unit": "km/h",
+  "wind_direction": 351,
+  "wind_compass": "N",
+  "weather_code": 95,
+  "weather_icon": "󰖓",
+  "weather_description": "Thunderstorm",
+  "openweather_code": "11d",
+  "humidity": 89,
+  "humidity_unit": "%",
+  "pressure": 1015.7,
+  "pressure_round": "1016",
+  "pressure_unit": "hPa",
+  "sunrise": "05:05am",
+  "sunset": "10:07pm",
+  "uv_index": 7.0,
+  "precipitation_chance": 83,
+  "precipitation_sum": 4.9,
+  "precipitation_unit": "mm",
+  "precipitation_hours": 8.0,
+  "cache_age": 536
+}
+```
+
 # Installation
 
 ## From Source
@@ -48,6 +89,8 @@ cargo install --path .
 ```
 
 # Waybar Configuration
+
+![outside as a waybar module](https://github.com/BaconIsAVeg/outside/blob/main/screenshot.png?raw=true)
 
 Add the following configuration to your Waybar config file (usually located at `~/.config/waybar/config.jsonc`):
 
