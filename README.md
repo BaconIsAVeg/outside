@@ -2,10 +2,6 @@
 
 A multi-purpose CLI weather client that uses the Open-Meteo API.
 
-[[_TOC_]]
-
-**Important**: You will also need a nerd patched font to display the weather icons. You can find one at [Nerd Fonts](https://www.nerdfonts.com/). Many distributions already include these fonts, so you may not need to install anything extra.
-
 ```
 Usage: outside [OPTIONS]
 
@@ -74,6 +70,8 @@ And the corresponding CSS to style the widget (usually located at `~/.config/way
   color: #f9e2af;
 }
 ```
+
+**Important**: You will also need a nerd patched font to display the weather icons. You can find one at [Nerd Fonts](https://www.nerdfonts.com/). Many distributions already include these fonts, so you may not need to install anything extra.
 
 ## Conditional Styling
 
