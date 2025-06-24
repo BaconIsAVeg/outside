@@ -2,7 +2,6 @@ use crate::context::Context;
 use crate::output::Output;
 use crate::Settings;
 use serde::{Deserialize, Serialize};
-use tinytemplate::TinyTemplate;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct DetailedOutput {
@@ -19,7 +18,7 @@ const DEFAULT_TEMPLATE: &str = "{city}, {country}\n\
     ";
 impl Output for DetailedOutput {
     fn new(context: Context, _: Settings) -> Self {
-        let mut tt = TinyTemplate::new();
+        let mut tt = Self::tt();
         let text_template = DEFAULT_TEMPLATE;
         tt.add_template("text", text_template).expect("Failed to add text template");
 

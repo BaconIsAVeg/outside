@@ -20,10 +20,6 @@ fn main() {
     let weather = weather::Weather::get_cached(loc.latitude, loc.longitude, s.clone());
 
     let context = context::Context::build(weather, loc);
-    if cfg!(debug_assertions) {
-        println!("Context: {:#?}", context);
-        println!("Settings: {:#?}", s);
-    }
 
     let output = match s.output {
         OutputFormat::Simple => render_output::<simple::SimpleOutput>(context, s.clone()),
