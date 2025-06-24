@@ -33,6 +33,7 @@ pub struct SimpleConfig {
     pub template: Option<String>,
 }
 
+// TODO: Figure out how to pretty up the help output with additonal information
 #[derive(Debug, Clone)]
 #[cli_settings]
 #[cli_settings_file = "#[serde_with::serde_as]#[derive(serde::Deserialize)]"]
@@ -46,8 +47,8 @@ pub struct Settings {
     #[cli_settings_clap = "#[arg(short, long, help = \"Units of measurement\")]"]
     pub units: Units,
 
-    #[cli_settings_clap = "#[arg(short, long, help = \"Desired output format\")]"]
-    pub output_format: OutputFormat,
+    #[cli_settings_clap = "#[arg(short, long, help = \"Output format\")]"]
+    pub output: OutputFormat,
 
     #[cli_settings_file]
     pub simple: SimpleConfig,

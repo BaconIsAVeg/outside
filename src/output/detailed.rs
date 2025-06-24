@@ -9,6 +9,7 @@ pub struct DetailedOutput {
     pub template: String,
 }
 
+// TODO: Add more context, also start adding forecast data
 const DEFAULT_TEMPLATE: &str = "{city}, {country}\n\
     Current:     {temperature}{temperature_unit} {weather_description}\n\
     Feels Like:  {feels_like}{temperature_unit}\n\

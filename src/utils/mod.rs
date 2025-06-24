@@ -12,13 +12,12 @@ pub fn get_now() -> u64 {
     SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()
 }
 
-pub fn get_file_cache(t: &str, p: &str, u: Units) -> String {
-    let dirs = xdg::BaseDirectories::with_prefix(env!("CARGO_PKG_NAME"));
-
+// TODO: Move this to a more appropriate place
+pub fn get_cached_file(datatype: &str, content: &str, u: Units) -> String {
     let mut hasher = DefaultHasher::new();
     let f = format!(
         "{}-{}",
-        p,
+        content,
         match u {
             Units::Metric => "metric",
             Units::Imperial => "imperial",
@@ -27,5 +26,18 @@ pub fn get_file_cache(t: &str, p: &str, u: Units) -> String {
     f.hash(&mut hasher);
 
     let hash = format!("{:x}", hasher.finish());
-    format!("{}{}-{}.cache", dirs.get_cache_home().unwrap_or_default().display(), t, hash)
+
+    std::fs::create_dir_all(
+        dirs_next::cache_dir()
+            .unwrap_or_else(|| dirs_next::home_dir().unwrap_or_default())
+            .join(env!("CARGO_PKG_NAME")),
+    )
+    .unwrap_or_else(|_| panic!("Unable to create the cache directory for {}", env!("CARGO_PKG_NAME")));
+
+    dirs_next::cache_dir()
+        .unwrap_or_else(|| dirs_next::home_dir().unwrap_or_default())
+        .join(env!("CARGO_PKG_NAME"))
+        .join(format!("{}-{}.cache", datatype, hash))
+        .display()
+        .to_string()
 }

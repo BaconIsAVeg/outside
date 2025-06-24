@@ -85,7 +85,7 @@ pub struct DailyUnits {
 
 impl Weather {
     pub fn get_cached(lat: f64, lon: f64, s: Settings) -> Self {
-        let filename = get_file_cache("weather", &s.location, s.units.to_owned());
+        let filename = get_cached_file("weather", &s.location, s.units.to_owned());
         if cfg!(debug_assertions) {
             println!("Weather cache file: {}", filename);
         }

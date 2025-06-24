@@ -25,7 +25,7 @@ pub struct LocationData {
 
 impl LocationData {
     pub fn get_cached(s: Settings) -> Self {
-        let filename = get_file_cache("location", &s.location, s.units);
+        let filename = get_cached_file("location", &s.location, s.units);
         if cfg!(debug_assertions) {
             println!("Location cache file: {}", filename);
         }

@@ -41,7 +41,6 @@ pub struct Context {
 
 impl Context {
     pub fn build(weather: Weather, location: LocationData) -> Self {
-        // TODO: Figure out how to make this global
         let now = get_now();
 
         let current = &weather.current;

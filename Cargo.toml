@@ -25,10 +25,10 @@ anyhow = "1.0"
 url = "2.5.4"
 chrono = "0.4.41"
 
-tinytemplate = "1.2.1"
-xdg = "3.0.0"
+dirs-next = "2.0.0"
 savefile = "0.18"
 savefile-derive = "0.18"
+tinytemplate = "1.2.1"
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(tarpaulin_include)'] }
