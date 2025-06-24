@@ -185,8 +185,5 @@ fn build_url(
         .append_pair("wind_speed_unit", wind_speed_unit)
         .append_pair("precipitation_unit", precipitation_unit);
 
-    if cfg!(debug_assertions) {
-        println!("Weather API: {:#?}", url);
-    }
     url.to_string()
 }
