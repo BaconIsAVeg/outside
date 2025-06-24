@@ -9,12 +9,11 @@ Options:
   -l, --location <LOCATION>            'City, CA' or leave blank to auto-detect
   -u, --units <UNITS>                  Units of measurement [possible values: metric, imperial]
   -o, --output-format <OUTPUT_FORMAT>  Desired output format [possible values: simple, detailed, json, waybar]
-      --use-cache <USE_CACHE>          Don't use cached location and weather data [possible values: true, false]
   -h, --help                           Print help
   -V, --version                        Print version
 ```
 
-The `--location` should be a string with your city and country code, e.g. `London, GB` or `New York, US`. If this value is not provided, http://ip-api.com will be used to auto-detect your location based on your IP address.  Location data is cached for one hour, and weather data is cached for 10 minutes to reduce API calls. You can disable caching by setting `--use-cache false`.
+The `--location` should be a string with your city and country code, e.g. `London, GB` or `New York, US`. If this value is not provided, http://ip-api.com will be used to auto-detect your location based on your IP address.  Location data is cached for 4 hours, and weather data is cached for 10 minutes to reduce API calls.
 
 ## Example Outputs
 
@@ -33,7 +32,7 @@ The `--location` should be a string with your city and country code, e.g. `Londo
     Pressure:    1015.7hPa
     Wind:        4.4km/h with gusts up to 11.5km/h (N)
 
-    ❯ outside -l 'Dusseldorf, DE' -o detailed --use-cache false
+    ❯ outside -l 'Dusseldorf, DE' -o detailed
     Düsseldorf District, DE
     Current:     19.6°C Overcast
     Feels Like:  17.9°C
@@ -41,7 +40,7 @@ The `--location` should be a string with your city and country code, e.g. `Londo
     Pressure:    1011.3hPa
     Wind:        18.4km/h with gusts up to 34.2km/h (SW)
 
-    ❯ outside -l 'Los Angeles, US' -o detailed -u imperial --use-cache false
+    ❯ outside -l 'Los Angeles, US' -o detailed -u imperial
     Los Angeles, US
     Current:     63.9°F Clear sky
     Feels Like:  65.1°F
