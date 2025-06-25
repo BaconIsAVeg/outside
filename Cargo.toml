@@ -29,6 +29,7 @@ dirs-next = "2.0.0"
 savefile = "0.18"
 savefile-derive = "0.18"
 tinytemplate = "1.2.1"
+openssl = { version = "0.10", features = ["vendored"] }
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(tarpaulin_include)'] }
