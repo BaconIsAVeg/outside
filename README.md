@@ -55,14 +55,10 @@ The `--location` should be a string with your city and country code, e.g. `Londo
       "city": "Edmonton",
       "country": "CA",
       "temperature": 10.9,
-      "temperature_round": "11",
       "feels_like": 10.0,
-      "feels_like_round": "10",
       "temperature_unit": "°C",
       "wind_speed": 4.4,
-      "wind_speed_round": "4",
       "wind_gusts": 11.5,
-      "wind_gusts_round": "12",
       "wind_speed_unit": "km/h",
       "wind_direction": 351,
       "wind_compass": "N",
@@ -73,7 +69,6 @@ The `--location` should be a string with your city and country code, e.g. `Londo
       "humidity": 89,
       "humidity_unit": "%",
       "pressure": 1015.7,
-      "pressure_round": "1016",
       "pressure_unit": "hPa",
       "sunrise": "05:05am",
       "sunset": "10:07pm",
@@ -110,9 +105,9 @@ An example configuration file:
 ```yaml
 units: Metric
 simple:
-  template: "{weather_icon} {temperature_round}{temperature_unit} <U+F059D> {wind_speed_round}<U+EA9F>{wind_gusts_round}"
+  template: "{weather_icon} {temperature | round}{temperature_unit} <U+F059D> {wind_speed | round}<U+EA9F>{wind_gusts | round}"
 waybar:
-  text: "{weather_icon} {temperature_round}{temperature_unit} <U+F059D> {wind_speed_round}<U+EA9F>{wind_gusts_round}"
+  text: "{weather_icon} {temperature | round}{temperature_unit} <U+F059D> {wind_speed | round}<U+EA9F>{wind_gusts | round}"
   hot_temperature: 30
   cold_temperature: 0
 ```
@@ -120,43 +115,6 @@ waybar:
 ### Available Template Variables
 
 You can run `outside -o json` to see a list of all the current variables and their values.
-
-```bash
-$ outside -o json | jq
-{
-  "city": "Edmonton",
-  "country": "CA",
-  "temperature": 10.9,
-  "temperature_round": "11",
-  "feels_like": 10.0,
-  "feels_like_round": "10",
-  "temperature_unit": "°C",
-  "wind_speed": 4.4,
-  "wind_speed_round": "4",
-  "wind_gusts": 11.5,
-  "wind_gusts_round": "12",
-  "wind_speed_unit": "km/h",
-  "wind_direction": 351,
-  "wind_compass": "N",
-  "weather_code": 95,
-  "weather_icon": "󰖓",
-  "weather_description": "Thunderstorm",
-  "openweather_code": "11d",
-  "humidity": 89,
-  "humidity_unit": "%",
-  "pressure": 1015.7,
-  "pressure_round": "1016",
-  "pressure_unit": "hPa",
-  "sunrise": "05:05am",
-  "sunset": "10:07pm",
-  "uv_index": 7.0,
-  "precipitation_chance": 83,
-  "precipitation_sum": 4.9,
-  "precipitation_unit": "mm",
-  "precipitation_hours": 8.0,
-  "cache_age": 536
-}
-```
 
 # Installation
 
