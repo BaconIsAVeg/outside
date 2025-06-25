@@ -12,7 +12,7 @@ doc:
     cargo doc -q
 
 changes:
-    git cliff -t {{VER}} -o Changes.md
+    git cliff -t {{VER}} -o CHANGELOG.md
 
 test:
     @echo "{{BLACK + BG_GREEN}}Running tests for {{NAME}} version {{VER}}...{{NORMAL}}"

@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 ### ⚙️ Miscellaneous Tasks
 
 * Update README to remove references to `_round` fields
+* Add cliff to generate a changelog
 ## [0.2.0] - 2025-06-24
 
 ### 🚀 Features
