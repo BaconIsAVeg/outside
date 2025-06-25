@@ -4,12 +4,15 @@ VER := shell('version-manager package ' + NAME + ' get')
 ZIP_NAME := NAME + '-' + VER + '-' + 'x86_64.tgz'
 
 # Run the in-progress development process
-dev: fmt fix clippy test
+dev: fmt fix clippy test changes
     @echo "{{BLACK + BG_BLUE}}Development checks complete.{{NORMAL}}"
     jj status
 
 doc:
     cargo doc -q
+
+changes:
+    git cliff -t {{VER}} -o Changes.md
 
 test:
     @echo "{{BLACK + BG_GREEN}}Running tests for {{NAME}} version {{VER}}...{{NORMAL}}"
@@ -30,7 +33,7 @@ coverage:
 
 # Build the package
 [doc('Run `just VER=<version> build` to update the version number')]
-build: setver
+build: setver changes
     @echo "{{BLACK + BG_GREEN}}Building {{NAME}} version {{VER}}...{{NORMAL}}"
     cargo update
     cargo -q build --release
