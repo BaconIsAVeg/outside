@@ -1,6 +1,5 @@
 name: Tests and release
-on:
-  create
+on: [push, create]
 env:
   CRATE_NAME: outside
   GITHUB_TOKEN: ${{ github.token }}
