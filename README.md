@@ -94,6 +94,27 @@ The `--location` should be a string with your city and country code, e.g. `Londo
       "percentage": 100
     }
 
+# Installation
+
+## From crates.io:
+
+```bash
+cargo install outside
+```
+
+## Binaries
+
+For binary releases (Linux, Freebsd, macOS, Windows), you can download the latest build from the [CI page](https://github.com/BaconIsAVeg/outside/blob/main/.github/workflows/ci.yml) and extract the binary from the archive. Make sure to place the binary in your `PATH` so you can run it from anywhere.
+
+## From Source
+
+You can install the `outside` binary by checking out this repository and then using [cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html):
+
+```bash
+cargo build --release
+cargo install --path .
+```
+
 # Configuration Options
 
 As an alternative to passing the command line options, the application will look for the following configuration file:
@@ -117,17 +138,6 @@ waybar:
 ### Available Template Variables
 
 You can run `outside -o json` to see a list of all the current variables and their values.
-
-# Installation
-
-## From Source
-
-You can install the `outside` binary by checking out this repository and then using [cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html):
-
-```bash
-cargo build --release
-cargo install --path .
-```
 
 # Waybar Configuration
 
