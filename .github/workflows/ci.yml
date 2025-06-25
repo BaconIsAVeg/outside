@@ -1,5 +1,6 @@
 name: Tests and release
-on: [push, pull_request]
+on:
+  create
 env:
   CRATE_NAME: outside
   GITHUB_TOKEN: ${{ github.token }}
@@ -46,3 +47,5 @@ jobs:
         with:
           executable-name: outside
           target: ${{ matrix.platform.target }}
+          extra-files: false
+          changes-file: false
