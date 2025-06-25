@@ -1,7 +1,7 @@
 BRANCH := "main"
 NAME := "outside"
 VER := shell('version-manager package ' + NAME + ' get')
-ZIP_NAME := NAME + '-' + VER + '.tar.gz'
+ZIP_NAME := NAME + '-' + VER + '-' + 'x86_64.tgz'
 
 # Run the in-progress development process
 dev: fmt fix clippy test
@@ -44,8 +44,8 @@ install: test build
 package: test build
     @echo "{{BLACK + BG_GREEN}}Packaging {{NAME}} version {{VER}}...{{NORMAL}}"
     mkdir -p dist
-    cp LICENSE dist/
-    cp README.md dist/
+    # cp LICENSE dist/
+    # cp README.md dist/
     cp target/release/{{NAME}} dist/
     tar -czf {{ZIP_NAME}} -C dist .
 
