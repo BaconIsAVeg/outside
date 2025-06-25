@@ -102,10 +102,6 @@ The `--location` should be a string with your city and country code, e.g. `Londo
 cargo install outside
 ```
 
-### Binaries
-
-For binary releases (Linux, Freebsd, macOS, Windows), you can download the latest build from the [CI page](https://github.com/BaconIsAVeg/outside/blob/main/.github/workflows/ci.yml) and extract the binary from the archive. Make sure to place the binary in your `PATH` so you can run it from anywhere.
-
 ### From Source
 
 You can install the `outside` binary by checking out this repository and then using [cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html):
