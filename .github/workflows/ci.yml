@@ -47,5 +47,5 @@ jobs:
         with:
           executable-name: outside
           target: ${{ matrix.platform.target }}
-          extra-files: false
-          changes-file: false
+          extra-files: |
+          changes-file: |
