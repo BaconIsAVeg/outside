@@ -59,7 +59,7 @@ publish-github:
     mkdir -p dist
     gh run download {{RUNID}} --dir temp-{{NAME}}/
     find temp-{{NAME}}/ -type f -regex '.*[gz,zip]' -exec mv {} dist/ \;
-    rename -v 'outside' 'outside-0.3.1' dist/*
+    rename -v 'outside' 'outside-{{VER}}' dist/*
     rm -rf temp-{{NAME}}
     @echo "{{BLACK + BG_GREEN}}Creating Github release...{{NORMAL}}"
     gh release create {{VER}} dist/* --title "Release {{VER}}" -F CHANGELOG.md
