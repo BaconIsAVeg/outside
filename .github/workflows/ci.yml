@@ -1,9 +1,19 @@
-name: Tests and release
-on: [create]
+name: Release
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/workflows/*.yml'
+      - '**/*.md'
+      - '**/*.toml'
+      - '.justfile'
+
 env:
   CRATE_NAME: outside
   GITHUB_TOKEN: ${{ github.token }}
   RUST_BACKTRACE: 1
+
 jobs:
   release:
     name: Release - ${{ matrix.platform.os-name }}

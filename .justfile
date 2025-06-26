@@ -5,7 +5,7 @@ ZIP_NAME := NAME + '-' + VER + '-' + 'x86_64.tgz'
 RUNID := `gh run list --json databaseId,status,conclusion | jq 'map(select(.status=="completed" and .conclusion=="success")) | .[0:1] | .[].databaseId'`
 
 # Run the in-progress development process
-dev: fmt fix clippy test changes
+dev: fmt fix clippy test
     @echo "{{BLACK + BG_BLUE}}Development checks complete.{{NORMAL}}"
     jj status
 
@@ -34,7 +34,7 @@ coverage:
 
 # Build the package
 [doc('Run `just VER=<version> build` to update the version number')]
-build: changes
+build:
     @echo "{{BLACK + BG_GREEN}}Building {{NAME}} version {{VER}}...{{NORMAL}}"
     cargo update
     cargo -q build --release
