@@ -15,7 +15,13 @@ const DEFAULT_TEMPLATE: &str = "{city}, {country}\n\
     Humidity:    {humidity}{humidity_unit}\n\
     Pressure:    {pressure}{pressure_unit}\n\
     Wind:        {wind_speed}{wind_speed_unit} with gusts up to {wind_gusts}{wind_speed_unit} ({wind_compass})\n\
-    ";
+    UV Index:    {uv_index}\n\
+    Precip:      {precipitation_sum} {precipitation_unit} ({precipitation_chance}% chance)\n\
+    Sunrise:     {sunrise}\n\
+    Sunset:      {sunset}\n\n\
+    {{ for day in forecast -}}
+    {day.date}    {day.temperature_low | round}-{day.temperature_high | round}{temperature_unit} - {day.weather_description}\n\
+    {{ endfor }}";
 impl Output for DetailedOutput {
     fn new(context: Context, _: Settings) -> Self {
         let mut tt = Self::tt();

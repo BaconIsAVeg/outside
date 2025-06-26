@@ -4,11 +4,15 @@ use crate::utils::mappings;
 use crate::utils::*;
 use crate::weather::Weather;
 
-#[derive(serde::Deserialize, serde::Serialize, Debug)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Deserialize, Serialize, Debug)]
 pub struct Context {
     pub city: String,
     pub country: String,
     pub temperature: f64,
+    pub temperature_low: f64,
+    pub temperature_high: f64,
     pub feels_like: f64,
     pub temperature_unit: String,
     pub wind_speed: f64,
@@ -31,7 +35,23 @@ pub struct Context {
     pub precipitation_sum: f64,
     pub precipitation_unit: String,
     pub precipitation_hours: f64,
+    pub forecast: Vec<ContextDaily>,
     pub cache_age: u64,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+pub struct ContextDaily {
+    pub date: String,
+    pub weather_code: i32,
+    pub weather_icon: String,
+    pub weather_description: String,
+    pub openweather_code: String,
+    pub uv_index: f64,
+    pub precipitation_sum: f64,
+    pub precipitation_hours: f64,
+    pub precipitation_chance: i32,
+    pub temperature_high: f64,
+    pub temperature_low: f64,
 }
 
 impl Context {
@@ -53,10 +73,31 @@ impl Context {
 
         let cache_age = now - weather.created_at;
 
+        let dailies: Vec<ContextDaily> = daily
+            .time
+            .iter()
+            .enumerate()
+            .map(|(i, date)| ContextDaily {
+                date: conversions::iso8601_to_date(date.clone()),
+                weather_code: daily.weather_code[i],
+                weather_icon: mappings::weather_code2icon(daily.weather_code[i]),
+                weather_description: mappings::weather_description(daily.weather_code[i]),
+                openweather_code: mappings::meteo2openweather_codes(daily.weather_code[i]),
+                uv_index: daily.uv_index_max[i],
+                precipitation_sum: daily.precipitation_sum[i],
+                precipitation_hours: daily.precipitation_hours[i],
+                precipitation_chance: daily.precipitation_probability_max[i],
+                temperature_high: daily.temperature_2m_max[i],
+                temperature_low: daily.temperature_2m_min[i],
+            })
+            .collect();
+
         Context {
             city: location.city,
             country: location.country_code,
             temperature: current.temperature_2m,
+            temperature_low: daily.temperature_2m_min[0],
+            temperature_high: daily.temperature_2m_max[0],
             feels_like: current.apparent_temperature,
             temperature_unit: units.temperature_2m.clone(),
             wind_speed: current.wind_speed_10m,
@@ -79,6 +120,7 @@ impl Context {
             precipitation_sum: daily.precipitation_sum[0],
             precipitation_unit: daily_units.precipitation_sum.clone(),
             precipitation_hours: daily.precipitation_hours[0],
+            forecast: dailies,
 
             cache_age,
         }
