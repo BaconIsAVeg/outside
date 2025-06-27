@@ -1,4 +1,4 @@
-use crate::api::{Location, LocationData};
+use crate::api::location::*;
 use crate::utils::*;
 
 use isahc::prelude::*;
