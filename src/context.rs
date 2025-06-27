@@ -1,8 +1,8 @@
-use crate::api::LocationData;
 use crate::utils::conversions;
 use crate::utils::mappings;
 use crate::utils::*;
 use crate::weather::Weather;
+use crate::LocationData;
 
 use serde::{Deserialize, Serialize};
 

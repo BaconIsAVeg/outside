@@ -4,7 +4,8 @@ pub mod output;
 pub mod settings;
 pub mod utils;
 
-use crate::api::{weather, LocationData};
+use crate::api::location::LocationData;
+use crate::api::weather;
 use crate::output::*;
 use crate::settings::{OutputFormat, Settings, Units};
 

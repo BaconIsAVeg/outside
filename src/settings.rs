@@ -33,21 +33,32 @@ pub struct SimpleConfig {
     pub template: Option<String>,
 }
 
-// TODO: Figure out how to pretty up the help output with additonal information
 #[derive(Debug, Clone)]
 #[cli_settings]
 #[cli_settings_file = "#[serde_with::serde_as]#[derive(serde::Deserialize)]"]
-#[cli_settings_clap = "#[derive(clap::Parser)]#[command(name = \"outside\", version)]"]
+/// A multi-purpose CLI weather client that uses the Open-Meteo API.
+#[cli_settings_clap = "#[derive(clap::Parser)]#[command(name = \"outside\", version, verbatim_doc_comment)]"]
 pub struct Settings {
+    /// The location for which to fetch the weather data:
+    ///     Must be in the format 'City, Country' i.e. New York, US
+    ///     Or leave blank to auto-detect using your IP address
     #[cli_settings_file]
-    #[cli_settings_clap = "#[arg(short, long, help = \"'City, CA' or leave blank to auto-detect\")]"]
+    #[cli_settings_clap = "#[arg(short, long, verbatim_doc_comment)]"]
     pub location: String,
 
+    /// The units of measurement for the weather data
+    ///   :
     #[cli_settings_file]
-    #[cli_settings_clap = "#[arg(short, long, help = \"Units of measurement\")]"]
+    #[cli_settings_clap = "#[arg(short, long, verbatim_doc_comment)]"]
     pub units: Units,
 
-    #[cli_settings_clap = "#[arg(short, long, help = \"Output format\")]"]
+    /// Which of the avilable output formats to use:
+    ///     simple: A simple text output, suitable for Polybar/Lemonbar/etc
+    ///     detailed: A detailed text output that includes a 7 day forecast
+    ///     json: A JSON output that includes all context data
+    ///     waybar: A JSON output formatted for Waybar
+    ///   :
+    #[cli_settings_clap = "#[arg(short, long, verbatim_doc_comment)]"]
     pub output: OutputFormat,
 
     #[cli_settings_file]

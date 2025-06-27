@@ -4,16 +4,22 @@
 
 A multi-purpose CLI weather client that uses the Open-Meteo API.
 
-```
-Usage: outside [OPTIONS]
+    Usage: outside [OPTIONS]
 
-Options:
-  -l, --location <LOCATION>            'City, CA' or leave blank to auto-detect
-  -u, --units <UNITS>                  Units of measurement [possible values: metric, imperial]
-  -o, --output-format <OUTPUT_FORMAT>  Desired output format [possible values: simple, detailed, json, waybar]
-  -h, --help                           Print help
-  -V, --version                        Print version
-```
+    Options:
+      -l, --location <LOCATION>  The location for which to fetch the weather data:
+                                     Must be in the format 'City, Country' i.e. New York, US
+                                     Or leave blank to auto-detect using your IP address
+      -u, --units <UNITS>        The units of measurement for the weather data
+                                   : [possible values: metric, imperial]
+      -o, --output <OUTPUT>      Which of the avilable output formats to use:
+                                     simple: A simple text output, suitable for Polybar/Lemonbar/etc
+                                     detailed: A detailed text output that includes a 7 day forecast
+                                     json: A JSON output that includes all context data
+                                     waybar: A JSON output formatted for Waybar
+                                   : [possible values: simple, detailed, json, waybar]
+      -h, --help                 Print help
+      -V, --version              Print version
 
 The `--location` should be a string with your city and country code, e.g. `London, GB` or `New York, US`. If this value is not provided, http://ip-api.com will be used to auto-detect your location based on your IP address.  Location data is cached for 4 hours, and weather data is cached for 10 minutes to reduce API calls.
 
@@ -21,76 +27,122 @@ The `--location` should be a string with your city and country code, e.g. `Londo
 
 ### Simple
 
-    ❯ outside
-    󰖓 11°C 󰖝 412
+    Overcast 18°C | Wind 713 | Precipitation 53%
 
 ### Detailed
 
-    ❯ outside -o detailed
+
+    $ outside -o detailed
     Edmonton, CA
-    Current:     10.9°C Thunderstorm
-    Feels Like:  10.0°C
-    Humidity:    89%
-    Pressure:    1015.7hPa
-    Wind:        4.4km/h with gusts up to 11.5km/h (N)
+    Current:     17.6°C Overcast
+    Feels Like:  17.5°C
+    Humidity:    72%
+    Pressure:    1006.9hPa
+    Wind:        6.6km/h with gusts up to 13.0km/h (W)
+    UV Index:    6.2
+    Precip:      0.8 mm (53% chance)
+    Sunrise:     05:07am
+    Sunset:      10:06pm
 
-    ❯ outside -l 'Dusseldorf, DE' -o detailed
-    Düsseldorf District, DE
-    Current:     19.6°C Overcast
-    Feels Like:  17.9°C
-    Humidity:    65%
-    Pressure:    1011.3hPa
-    Wind:        18.4km/h with gusts up to 34.2km/h (SW)
+    Fri 06/27    9-22°C - Rain showers, slight
+    Sat 06/28    13-21°C - Thunderstorm
+    Sun 06/29    11-24°C - Overcast
+    Mon 06/30    14-25°C - Overcast
+    Tue 07/01    15-25°C - Overcast
+    Wed 07/02    14-30°C - Overcast
+    Thu 07/03    16-24°C - Rain showers, slight
 
-    ❯ outside -l 'Los Angeles, US' -o detailed -u imperial
+
+    $ outside -o detailed -l 'Los Angeles, US' -u imperial
     Los Angeles, US
-    Current:     63.9°F Clear sky
-    Feels Like:  65.1°F
-    Humidity:    84%
-    Pressure:    1012.8hPa
-    Wind:        4.2mp/h with gusts up to 5.8mp/h (SW)
+    Current:     67.1°F Clear sky
+    Feels Like:  68.9°F
+    Humidity:    80%
+    Pressure:    1012.5hPa
+    Wind:        4.6mp/h with gusts up to 5.8mp/h (W)
+    UV Index:    8.5
+    Precip:      0.0 inch (0% chance)
+    Sunrise:     05:43am
+    Sunset:      08:08pm
+
+    Fri 06/27    61-85°F - Fog
+    Sat 06/28    58-87°F - Fog
+    Sun 06/29    58-85°F - Fog
+    Mon 06/30    65-77°F - Clear sky
+    Tue 07/01    64-79°F - Clear sky
+    Wed 07/02    64-77°F - Clear sky
+    Thu 07/03    63-74°F - Clear sky
 
 ### JSON
 
-    ❯ outside -o json | jq
+    $ outside -j json | jq
     {
       "city": "Edmonton",
       "country": "CA",
-      "temperature": 10.9,
-      "feels_like": 10.0,
+      "temperature": 17.6,
+      "temperature_low": 9.1,
+      "temperature_high": 21.7,
+      "feels_like": 17.5,
       "temperature_unit": "°C",
-      "wind_speed": 4.4,
-      "wind_gusts": 11.5,
+      "wind_speed": 6.6,
+      "wind_gusts": 13.0,
       "wind_speed_unit": "km/h",
-      "wind_direction": 351,
-      "wind_compass": "N",
-      "weather_code": 95,
-      "weather_icon": "󰖓",
-      "weather_description": "Thunderstorm",
-      "openweather_code": "11d",
-      "humidity": 89,
+      "wind_direction": 257,
+      "wind_compass": "W",
+      "weather_code": 3,
+      "weather_icon": "󰖐",
+      "weather_description": "Overcast",
+      "openweather_code": "04d",
+      "humidity": 72,
       "humidity_unit": "%",
-      "pressure": 1015.7,
+      "pressure": 1006.9,
       "pressure_unit": "hPa",
-      "sunrise": "05:05am",
-      "sunset": "10:07pm",
-      "uv_index": 7.0,
-      "precipitation_chance": 83,
-      "precipitation_sum": 4.9,
+      "sunrise": "05:07am",
+      "sunset": "10:06pm",
+      "uv_index": 6.2,
+      "precipitation_chance": 53,
+      "precipitation_sum": 0.8,
       "precipitation_unit": "mm",
-      "precipitation_hours": 8.0,
-      "cache_age": 413
+      "precipitation_hours": 4.0,
+      "forecast": [
+        {
+          "date": "Fri 06/27",
+          "weather_code": 80,
+          "weather_icon": "󰖗",
+          "weather_description": "Rain showers, slight",
+          "openweather_code": "09d",
+          "uv_index": 6.2,
+          "precipitation_sum": 0.8,
+          "precipitation_hours": 4.0,
+          "precipitation_chance": 53,
+          "temperature_high": 21.7,
+          "temperature_low": 9.1
+        },
+        ...
+        {
+          "date": "Thu 07/03",
+          "weather_code": 80,
+          "weather_icon": "󰖗",
+          "weather_description": "Rain showers, slight",
+          "openweather_code": "09d",
+          "uv_index": 4.5,
+          "precipitation_sum": 4.8,
+          "precipitation_hours": 3.0,
+          "precipitation_chance": 35,
+          "temperature_high": 23.7,
+          "temperature_low": 16.1
+        }
+      ],
+      "cache_age": 355
     }
 
 ### Waybar
 
-    ❯ outside -o waybar | jq
+    $ outside -o waybar | jq
     {
-      "text": "󰖓 11°C 󰖝 412",
-      "tooltip": "Edmonton, CA\nThunderstorm\nFeels like: 10.0 °C\nHumidity: 89%\nPressure: 1015.7 hPa\nWind: 4.411.5 km/h (N)\nPrecipitation: 4.9 mm (83%)\n\n 05:05am  10:07pm",
-      "class": [
-        "rain"
-      ],
+      "text": "󰖐 18°C 󰖗 53%",
+      "tooltip": "Edmonton, CA\nOvercast\nFeels Like  17.5 °C\nForecast    9-22 °C\nHumidity    72%\nPressure    1006.9 hPa\nWind        6.613.0 km/h (W)\nPrecip      0.8 mm (53% chance)\n\n 05:07am    10:06pm",
+      "class": [],
       "percentage": 100
     }
 
