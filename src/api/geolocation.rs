@@ -1,9 +1,8 @@
 use crate::api::location::*;
-use crate::utils::*;
+use crate::utils;
 
 use isahc::prelude::*;
 use serde::{Deserialize, Serialize};
-use url::Url;
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -21,7 +20,9 @@ pub struct Results {
 
 impl Location for GeoLocation {
     fn fetch(n: &str, c: &str) -> LocationData {
-        let api_url = build_url(n, c);
+        let base_url = "https://geocoding-api.open-meteo.com/v1/search";
+        let params = vec![("name", n), ("countryCode", c)];
+        let api_url = utils::urls::builder(base_url, params);
 
         let mut response = isahc::get(api_url).expect("Unable to send Location request");
         if !response.status().is_success() {
@@ -39,22 +40,7 @@ impl Location for GeoLocation {
             latitude: loc.results[0].latitude,
             longitude: loc.results[0].longitude,
             location: format!("{}, {}", loc.results[0].admin2, loc.results[0].country_code),
-            created_at: get_now(),
+            created_at: utils::get_now(),
         }
     }
-}
-
-// TODO: Refactor this into a common function
-fn build_url(n: &str, c: &str) -> String {
-    let base_url = "https://geocoding-api.open-meteo.com/v1/search";
-    let mut url = Url::parse(base_url).expect("Unable to parse base URL");
-
-    url.query_pairs_mut()
-        .append_pair("name", n)
-        .append_pair("countryCode", c)
-        .append_pair("count", "1")
-        .append_pair("language", "en")
-        .append_pair("format", "json");
-
-    url.to_string()
 }

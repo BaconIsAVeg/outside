@@ -1,4 +1,4 @@
-use crate::utils::*;
+use crate::utils;
 use crate::Settings;
 use crate::Units;
 
@@ -6,11 +6,6 @@ use isahc::prelude::*;
 use savefile::prelude::*;
 use savefile_derive::Savefile;
 use serde::{Deserialize, Serialize};
-use url::Url;
-
-macro_rules! string_vec {
-    ($($x:expr),*) => (vec![$($x.to_string()),*]);
-}
 
 #[derive(Default, Serialize, Deserialize, Debug, Savefile)]
 pub struct Weather {
@@ -85,15 +80,15 @@ pub struct DailyUnits {
 
 impl Weather {
     pub fn get_cached(lat: f64, lon: f64, s: Settings) -> Self {
-        let filename = cache::get_cached_file("weather", &s.location, s.units.to_owned());
+        let filename = utils::cache::get_cached_file("weather", &s.location, s.units.to_owned());
         if cfg!(debug_assertions) {
             println!("Weather cache file: {}", filename);
         }
-        let now = get_now();
+        let now = utils::get_now();
 
         let unit_strings = match s.units.to_owned() {
-            Units::Metric => unitstrings::UnitStrings::metric(),
-            Units::Imperial => unitstrings::UnitStrings::imperial(),
+            Units::Metric => utils::unitstrings::UnitStrings::metric(),
+            Units::Imperial => utils::unitstrings::UnitStrings::imperial(),
         };
 
         let wd: Weather = load_file(&filename, 0).unwrap_or_default();
@@ -122,14 +117,51 @@ impl Weather {
         data
     }
 
-    fn fetch(lat: f64, lon: f64, units: unitstrings::UnitStrings) -> Self {
-        let api_url = build_url(
-            lat.to_string().as_str(),
-            lon.to_string().as_str(),
-            units.temperature.as_str(),
-            units.wind_speed.as_str(),
-            units.precipitation.as_str(),
-        );
+    fn fetch(lat: f64, lon: f64, units: utils::unitstrings::UnitStrings) -> Self {
+        let base_url = "https://api.open-meteo.com/v1/forecast";
+
+        let current_fields = [
+            "temperature_2m",
+            "relative_humidity_2m",
+            "apparent_temperature",
+            "wind_speed_10m",
+            "wind_direction_10m",
+            "wind_gusts_10m",
+            "precipitation",
+            "weather_code",
+            "pressure_msl",
+        ]
+        .join(",");
+
+        let daily_fields = [
+            "sunrise",
+            "sunset",
+            "weather_code",
+            "temperature_2m_max",
+            "temperature_2m_min",
+            "precipitation_sum",
+            "precipitation_hours",
+            "precipitation_probability_max",
+            "uv_index_max",
+        ]
+        .join(",");
+
+        let lat_str = lat.to_string();
+        let lon_str = lon.to_string();
+
+        let params: Vec<(&str, &str)> = vec![
+            ("latitude", lat_str.as_str()),
+            ("longitude", lon_str.as_str()),
+            ("timezone", "auto"),
+            ("forecast_days", "7"),
+            ("current", current_fields.as_str()),
+            ("daily", daily_fields.as_str()),
+            ("temperature_unit", units.temperature.as_str()),
+            ("wind_speed_unit", units.wind_speed.as_str()),
+            ("precipitation_unit", units.precipitation.as_str()),
+        ];
+
+        let api_url = utils::urls::builder(base_url, params);
 
         let mut response = isahc::get(api_url).expect("Unable to send Weather request");
         if !response.status().is_success() {
@@ -138,52 +170,4 @@ impl Weather {
         let body = response.text().expect("Unable to read Weather response body");
         serde_json::from_str(&body).expect("Unable to parse Weather JSON response")
     }
-}
-
-fn build_url(
-    lat: &str,
-    lon: &str,
-    temperature_unit: &str,
-    wind_speed_unit: &str,
-    precipitation_unit: &str,
-) -> String {
-    let base_url = "https://api.open-meteo.com/v1/forecast";
-    let mut url = Url::parse(base_url).expect("Unable to parse base URL");
-
-    let current_fields = string_vec![
-        "temperature_2m",
-        "relative_humidity_2m",
-        "apparent_temperature",
-        "wind_speed_10m",
-        "wind_direction_10m",
-        "wind_gusts_10m",
-        "precipitation",
-        "weather_code",
-        "pressure_msl"
-    ];
-
-    let daily_fields = string_vec![
-        "sunrise",
-        "sunset",
-        "weather_code",
-        "temperature_2m_max",
-        "temperature_2m_min",
-        "precipitation_sum",
-        "precipitation_hours",
-        "precipitation_probability_max",
-        "uv_index_max"
-    ];
-
-    url.query_pairs_mut()
-        .append_pair("latitude", lat)
-        .append_pair("longitude", lon)
-        .append_pair("timezone", "auto")
-        .append_pair("forecast_days", "7")
-        .append_pair("current", &current_fields.join(","))
-        .append_pair("daily", &daily_fields.join(","))
-        .append_pair("temperature_unit", temperature_unit)
-        .append_pair("wind_speed_unit", wind_speed_unit)
-        .append_pair("precipitation_unit", precipitation_unit);
-
-    url.to_string()
 }
