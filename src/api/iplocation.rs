@@ -1,9 +1,8 @@
 use crate::api::location::*;
-use crate::utils::*;
+use crate::utils;
 
 use isahc::prelude::*;
 use serde::{Deserialize, Serialize};
-use url::Url;
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -16,7 +15,8 @@ pub struct IPLocation {
 
 impl Location for IPLocation {
     fn fetch(_: &str, _: &str) -> LocationData {
-        let api_url = build_url("33603794");
+        let base_url = "http://ip-api.com/json";
+        let api_url = utils::urls::builder(base_url, vec![("fields", "33603794")]);
 
         let mut response = isahc::get(api_url).expect("Unable to request location data");
         if !response.status().is_success() {
@@ -31,16 +31,7 @@ impl Location for IPLocation {
             latitude: loc.lat,
             longitude: loc.lon,
             location: "".to_string(),
-            created_at: get_now(),
+            created_at: utils::get_now(),
         }
     }
-}
-
-fn build_url(field_code: &str) -> String {
-    let base_url = "http://ip-api.com/json";
-    let mut url = Url::parse(base_url).expect("Unable to parse base location URL");
-
-    url.query_pairs_mut().append_pair("fields", field_code);
-
-    url.to_string()
 }
