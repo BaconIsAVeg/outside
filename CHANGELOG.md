@@ -1,31 +1,18 @@
-# Changelog
-
-All notable changes to this project will be documented in this file.
-
 ## [0.3.3] - 2025-06-29
 
-### 💼 Other
-
-* Fix geolocation API response handling to use `name` instead of `admin2`
 ### 🚜 Refactor
 
 * Refactor API and Location Handling, update README
 * Refactor API URL building into a utility module
+### Bug
+
+* Fix geolocation API response handling to use `name` instead of `admin2`
 ## [0.3.2] - 2025-06-26
 
 ### 🚀 Features
 
 * Additional context variables, including the 7 day forecast
 ## [0.3.1] - 2025-06-25
-
-### 🐛 Bug Fixes
-
-* Attempting to get cross working with `openssl`
-### ⚙️ Miscellaneous Tasks
-
-* Update README to remove references to `_round` fields
-* Update badge name
-## [0.2.0] - 2025-06-24
 
 ### 🚀 Features
 
@@ -36,19 +23,19 @@ All notable changes to this project will be documented in this file.
 * Add the missing wind gusts field to the weather context
 * Add cache age to context
 * Add additional daily weather forecast data
+* feat: Add cache control for location and weather data, enabled by
 * Adding additonal output default templates
 * Add rounded units to the context, convert sunrise and sunset datetimes to times
 * Add support for config.yaml templates
 * Add context aware CSS classes to Waybar output
+* feat: Switch to `savefile` instead of `disk` for location and weather data caching, which
+* feat: Switch from `xdg` to `dirs-next` for cache directory management,
+* feat: Add a custom teplate formatter `| round` to round numbers in templates
 ### 🐛 Bug Fixes
 
 * Somehow, I messed up the range for Fog
-### ⚙️ Miscellaneous Tasks
+* Attempting to get cross working with `openssl`
+* Missed updating the lock file
+### 🚜 Refactor
 
-* Initial commit
-* Cleanup in preparation for releasing on Github
-* Adding github workflows
-* Add screenshot for waybar and template vars to the README
-* Add more output examples
-* Update README.md to clarify caching behavior and removal of the --use-cache option
-
+* adding release build workflow
