@@ -12,6 +12,10 @@ dev: fmt fix clippy test
 doc:
     cargo doc -q
 
+demo:
+    @echo "{{BLACK + BG_GREEN}}Recording demo for {{NAME}} version {{VER}}...{{NORMAL}}"
+    cd demo && vhs demo.tape
+
 changes:
     git cliff -l -o CHANGELOG.md
 

@@ -1,6 +1,7 @@
 # Outside
 
 [![Download Latest Build](https://github.com/BaconIsAVeg/outside/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/BaconIsAVeg/outside/actions/workflows/ci.yml)
+![demo](https://github.com/BaconIsAVeg/outside/blob/main/demo/demo.gif)
 
 A multi-purpose CLI weather client that uses the Open-Meteo API.
 
