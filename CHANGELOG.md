@@ -1,4 +1,23 @@
-## [unreleased]
+## [0.3.3] - 2025-06-30
+
+### 🐛 Bug Fixes
+
+* Fix geolocation API response handling to use `name` instead of `admin2`
+### 🚜 Refactor
+
+* Refactor API and Location Handling, update README
+* Refactor API URL building into a utility module
+## [0.3.2] - 2025-06-30
+
+### 🚀 Features
+
+* Additional context variables, including the 7 day forecast
+## [0.3.1] - 2025-06-30
+
+### 🚜 Refactor
+
+* adding release build workflow
+## [0.3.0] - 2025-06-30
 
 ### 🚀 Features
 
@@ -17,13 +36,6 @@
 * feat: Switch to `savefile` instead of `disk` for location and weather data caching, which
 * feat: Switch from `xdg` to `dirs-next` for cache directory management,
 * feat: Add a custom template formatter `| round` to round numbers in templates
-* Additional context variables, including the 7 day forecast
 ### 🐛 Bug Fixes
 
 * Somehow, I messed up the range for Fog
-* Fix geolocation API response handling to use `name` instead of `admin2`
-### 🚜 Refactor
-
-* adding release build workflow
-* Refactor API and Location Handling, update README
-* Refactor API URL building into a utility module
