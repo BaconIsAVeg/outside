@@ -2,6 +2,7 @@ BRANCH := "main"
 NAME := "outside"
 VER := shell('tomlq -r .package.version Cargo.toml')
 ZIP_NAME := NAME + '-' + VER + '-' + 'x86_64.tgz'
+TEMPFILE := shell('mktemp -t cliff.XXXXXX')
 RUNID := `gh run list --json databaseId,status,conclusion | jq 'map(select(.status=="completed" and .conclusion=="success")) | .[0:1] | .[].databaseId'`
 
 # Run the in-progress development process
@@ -66,12 +67,10 @@ publish-github:
     rename -v 'outside' 'outside-{{VER}}' dist/*
     rm -rf temp-{{NAME}}
     @echo "{{BLACK + BG_GREEN}}Creating Github release...{{NORMAL}}"
-    gh release create {{VER}} dist/* --title "Release {{VER}}" -F CHANGELOG.md
+    git cliff -l | tail +5 | tee {{TEMPFILE}}
+    gh release create {{VER}} dist/* --title "Release {{VER}}" -F {{TEMPFILE}}
     rm -rf dist
-
-# Publish the packages
-publish: test build package publish-crates
-    @echo "{{BLACK + BG_BLUE}}Done publishing packages!{{NORMAL}}"
+    rm {{TEMPFILE}}
 
 publish-crates: test build
     @echo "{{BLACK + BG_GREEN}}Releasing package {{ZIP_NAME}} to crates.io...{{NORMAL}}"
