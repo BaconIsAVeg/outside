@@ -17,7 +17,7 @@ demo:
     cd demo && vhs demo.tape
 
 changes:
-    git cliff -l -o CHANGELOG.md
+    git cliff -o CHANGELOG.md
 
 test:
     @echo "{{BLACK + BG_GREEN}}Running tests for {{NAME}} version {{VER}}...{{NORMAL}}"

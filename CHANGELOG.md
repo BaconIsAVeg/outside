@@ -1,3 +1,17 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## [0.3.5] - 2025-07-03
+
+### 🚀 Features
+
+* Support streaming output at specified intervals
+## [0.3.4] - 2025-07-03
+
+### 🚜 Refactor
+
+* refactor: cleanup enum handling and add a shared http client for
 ## [0.3.3] - 2025-06-30
 
 ### 🐛 Bug Fixes
@@ -39,3 +53,4 @@
 ### 🐛 Bug Fixes
 
 * Somehow, I messed up the range for Fog
+
