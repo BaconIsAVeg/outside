@@ -57,16 +57,19 @@ impl Location for GeoLocation {
         }
 
         let result = &loc.results[0];
-        let city = result.name.to_owned();
-        let country_code = result.country_code.to_owned();
 
-        Ok(LocationData {
-            city,
-            country_code,
+        let mut location_data = LocationData {
+            city: result.name.to_owned(),
+            country_code: result.country_code.to_owned(),
             latitude: result.latitude,
             longitude: result.longitude,
             location: format!("{}, {}", result.name, result.country_code),
             created_at: utils::get_now(),
-        })
+        };
+
+        // Normalize the location data for consistent formatting
+        location_data.normalize();
+
+        Ok(location_data)
     }
 }

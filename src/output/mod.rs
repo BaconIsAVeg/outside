@@ -1,6 +1,7 @@
 pub mod detailed;
 pub mod json;
 pub mod simple;
+pub mod tui;
 pub mod waybar;
 
 use crate::context::Context;

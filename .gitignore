@@ -5,3 +5,4 @@
 *.tgz
 
 CLAUDE.md
+.aider*

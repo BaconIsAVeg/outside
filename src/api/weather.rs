@@ -103,9 +103,6 @@ impl Weather {
     /// - Network connectivity issues occur
     pub fn get_cached(lat: f64, lon: f64, s: Settings) -> Result<Self> {
         let filename = utils::cache::get_cached_file("weather", &s.location, s.units.to_owned());
-        if cfg!(debug_assertions) {
-            println!("Weather cache file: {}", filename);
-        }
         let now = utils::get_now();
 
         let unit_strings = s.units.to_unit_strings();
@@ -113,9 +110,6 @@ impl Weather {
         let wd: Weather = load_file(&filename, 0).unwrap_or_default();
 
         if wd.latitude == lat && wd.longitude == lon && wd.created_at > 0 && now - wd.created_at < 600 {
-            if cfg!(debug_assertions) {
-                println!("Using cached weather data");
-            }
             return Ok(wd);
         }
 
@@ -125,11 +119,7 @@ impl Weather {
         data.created_at = now;
 
         match save_file(&filename, 0, &data) {
-            Ok(_) => {
-                if cfg!(debug_assertions) {
-                    println!("Wrote weather data to disk");
-                }
-            },
+            Ok(_) => {},
             Err(e) => eprintln!("Unable to save weather data to disk: {:#?}", e),
         }
 

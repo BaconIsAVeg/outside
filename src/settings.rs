@@ -44,6 +44,7 @@ impl Units {
 #[derive(ValueEnum, Clone, Debug, Serialize, Deserialize, Default)]
 pub enum OutputFormat {
     #[default]
+    Tui,
     Simple,
     Detailed,
     Json,
@@ -66,6 +67,7 @@ impl OutputFormat {
             OutputFormat::Detailed => render_output::<detailed::DetailedOutput>,
             OutputFormat::Json => render_output::<json::JsonOutput>,
             OutputFormat::Waybar => render_output::<waybar::WaybarOutput>,
+            OutputFormat::Tui => render_output::<tui::TuiOutput>,
         }
     }
 }
@@ -88,7 +90,7 @@ pub struct SimpleConfig {
 #[derive(Debug, Clone)]
 #[cli_settings]
 #[cli_settings_file = "#[serde_with::serde_as]#[derive(serde::Deserialize)]"]
-/// A multi-purpose CLI weather client that uses the Open-Meteo API.
+/// A multi-purpose weather client for your terminal
 #[cli_settings_clap = "#[derive(clap::Parser)]#[command(name = \"outside\", version, verbatim_doc_comment)]"]
 pub struct Settings {
     /// Location to fetch weather data for,
@@ -107,10 +109,10 @@ pub struct Settings {
     pub output: OutputFormat,
 
     /// Enable streaming mode for continuous output
-    #[cli_settings_clap = "#[arg(short, long, verbatim_doc_comment)]"]
+    #[cli_settings_clap = "#[arg(short, long, action = clap::ArgAction::SetTrue, verbatim_doc_comment)]"]
     pub stream: bool,
 
-    /// Interval in seconds between weather updates in streaming mode
+    /// Interval in seconds between streaming updates
     #[cli_settings_file]
     #[cli_settings_clap = "#[arg(short, long, default_value = \"30\", verbatim_doc_comment)]"]
     pub interval: u64,

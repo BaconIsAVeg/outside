@@ -3,7 +3,7 @@
 [![Download Latest Build](https://github.com/BaconIsAVeg/outside/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/BaconIsAVeg/outside/actions/workflows/ci.yml)
 ![demo](https://github.com/BaconIsAVeg/outside/blob/main/demo/demo.gif)
 
-A multi-purpose CLI weather client that uses the Open-Meteo API.
+A multi-purpose weather client for your terminal.
 
     Usage: outside [OPTIONS]
 
@@ -11,9 +11,9 @@ A multi-purpose CLI weather client that uses the Open-Meteo API.
       -l, --location <LOCATION>  Location to fetch weather data for,
                                  leave blank to auto-detect using your IP address
       -u, --units <UNITS>        Units of measurement [possible values: metric, imperial]
-      -o, --output <OUTPUT>      Display format [possible values: simple, detailed, json, waybar]
-      -s, --stream <STREAM>      Enable streaming mode for continuous output [possible values: true, false]
-      -i, --interval <INTERVAL>  Interval in seconds between weather updates in streaming mode [default: 30]
+      -o, --output <OUTPUT>      Display format [possible values: simple, detailed, json, waybar, tui]
+      -s, --stream               Enable streaming mode for continuous output
+      -i, --interval <INTERVAL>  Interval in seconds between streaming updates [default: 30]
       -h, --help                 Print help
       -V, --version              Print version
 

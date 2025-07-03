@@ -6,7 +6,7 @@ use crate::LocationData;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Context {
     pub city: String,
     pub country: String,
@@ -39,7 +39,7 @@ pub struct Context {
     pub cache_age: u64,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct ContextDaily {
     pub date: String,
     pub weather_code: i32,

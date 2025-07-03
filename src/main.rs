@@ -6,7 +6,7 @@ pub mod utils;
 
 use crate::api::location::LocationData;
 use crate::api::weather;
-use crate::settings::{Settings, Units};
+use crate::settings::{OutputFormat, Settings, Units};
 use anyhow::Result;
 use std::time::Duration;
 use tokio::signal;
@@ -36,6 +36,12 @@ async fn main() -> Result<()> {
         .join("config.yaml");
 
     let s = Settings::build(vec![config_file], std::env::args_os())?;
+
+    // TUI mode is incompatible with streaming mode
+    if s.stream && matches!(s.output, OutputFormat::Tui) {
+        eprintln!("Error: TUI mode cannot be used with streaming mode.");
+        std::process::exit(1);
+    }
 
     if s.stream {
         run_streaming_mode(s).await

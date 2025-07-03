@@ -5,7 +5,7 @@ edition = "2021"
 authors = ["BaconIsAVeg <baconisaveg@fastmail.ca>"]
 license = "AGPL-3.0-or-later"
 readme = "README.md"
-description = "A multi-purpose CLI weather client that uses the Open-Meteo API."
+description = "A multi-purpose weather client for your terminal"
 homepage = "https://github.com/BaconIsAVeg/outside"
 repository = "https://github.com/BaconIsAVeg/outside"
 keywords = ["cli", "weather"]
@@ -31,6 +31,8 @@ savefile-derive = "0.18"
 tinytemplate = "1.2.1"
 openssl = { version = "0.10", features = ["vendored"] }
 tokio = { version = "1.0", features = ["rt-multi-thread", "time", "signal", "macros"] }
+cursive = "0.21"
+stringcase = "0.4"
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(tarpaulin_include)'] }

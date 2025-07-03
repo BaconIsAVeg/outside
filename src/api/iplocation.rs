@@ -45,13 +45,18 @@ impl Location for IPLocation {
         let loc: IPLocation =
             serde_json::from_str(&body).with_context(|| "Unable to parse IP location response JSON")?;
 
-        Ok(LocationData {
+        let mut location_data = LocationData {
             city: loc.city.to_owned(),
             country_code: loc.country_code.to_owned(),
             latitude: loc.lat,
             longitude: loc.lon,
             location: "".to_string(),
             created_at: utils::get_now(),
-        })
+        };
+
+        // Normalize the location data for consistent formatting
+        location_data.normalize();
+
+        Ok(location_data)
     }
 }
