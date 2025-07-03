@@ -16,6 +16,27 @@ pub struct WaybarOutput {
 }
 
 impl Output for WaybarOutput {
+    /// Creates a new WaybarOutput instance with text, tooltip, and CSS classes.
+    ///
+    /// Generates Waybar-compatible JSON output with customizable text and tooltip
+    /// templates, plus dynamic CSS classes based on weather conditions and
+    /// temperature thresholds.
+    ///
+    /// CSS classes generated:
+    /// - "hot" - when temperature exceeds configured hot threshold
+    /// - "cold" - when temperature is below configured cold threshold
+    /// - "fog" - for fog conditions (weather codes 40-49)
+    /// - "snow" - for snow conditions (weather codes 70-79)
+    /// - "rain" - for rain conditions (weather codes 50-69, 80-99)
+    ///
+    /// # Arguments
+    ///
+    /// * `context` - Weather and location data to be formatted
+    /// * `settings` - Settings containing templates and temperature thresholds
+    ///
+    /// # Returns
+    ///
+    /// Returns a WaybarOutput instance with formatted text, tooltip, and classes.
     fn new(context: Context, settings: Settings) -> Self {
         let mut classes = Vec::<String>::new();
 
@@ -53,6 +74,12 @@ impl Output for WaybarOutput {
         WaybarOutput { text, tooltip, class: classes, percentage: 100 }
     }
 
+    /// Returns the Waybar-compatible JSON output.
+    ///
+    /// # Returns
+    ///
+    /// Returns the weather data formatted as JSON for Waybar consumption,
+    /// including text, tooltip, CSS classes, and percentage fields.
     fn render(&self) -> String {
         serde_json::to_string(self).unwrap()
     }

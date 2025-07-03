@@ -20,6 +20,26 @@ pub struct Results {
 }
 
 impl Location for GeoLocation {
+    /// Fetches location data using the Open-Meteo geocoding API.
+    ///
+    /// Searches for a location by name and country code, returning the first result.
+    /// Uses the Open-Meteo geocoding API to find coordinates for the specified location.
+    ///
+    /// # Arguments
+    ///
+    /// * `n` - The city or location name to search for
+    /// * `c` - The country code to narrow down the search
+    ///
+    /// # Returns
+    ///
+    /// Returns `LocationData` containing the location details and coordinates.
+    ///
+    /// # Errors
+    ///
+    /// This function will return an error if:
+    /// - The API request fails
+    /// - The JSON response cannot be parsed
+    /// - No results are found for the specified location
     fn fetch(n: &str, c: &str) -> Result<LocationData> {
         let base_url = "https://geocoding-api.open-meteo.com/v1/search";
         let params =

@@ -79,6 +79,28 @@ pub struct DailyUnits {
 }
 
 impl Weather {
+    /// Retrieves weather data for the specified coordinates, using cached data if available.
+    ///
+    /// Weather data is cached for 10 minutes (580 seconds) to reduce API calls.
+    /// If cached data is found for the same coordinates and is still fresh, it will be returned.
+    /// Otherwise, fresh data will be fetched from the Open-Meteo API.
+    ///
+    /// # Arguments
+    ///
+    /// * `lat` - Latitude coordinate for the weather location
+    /// * `lon` - Longitude coordinate for the weather location
+    /// * `s` - Settings containing units and location information for caching
+    ///
+    /// # Returns
+    ///
+    /// Returns weather data on success, or an error if fetching fails.
+    ///
+    /// # Errors
+    ///
+    /// This function will return an error if:
+    /// - The API request fails
+    /// - The response cannot be parsed as JSON
+    /// - Network connectivity issues occur
     pub fn get_cached(lat: f64, lon: f64, s: Settings) -> Result<Self> {
         let filename = utils::cache::get_cached_file("weather", &s.location, s.units.to_owned());
         if cfg!(debug_assertions) {
@@ -114,6 +136,27 @@ impl Weather {
         Ok(data)
     }
 
+    /// Fetches fresh weather data from the Open-Meteo API.
+    ///
+    /// Constructs the API URL with the appropriate parameters for current weather,
+    /// 7-day forecast, and unit preferences, then makes the HTTP request.
+    ///
+    /// # Arguments
+    ///
+    /// * `lat` - Latitude coordinate for the weather location
+    /// * `lon` - Longitude coordinate for the weather location
+    /// * `units` - Unit system for temperature, wind speed, and precipitation
+    ///
+    /// # Returns
+    ///
+    /// Returns parsed weather data on success, or an error if the request fails.
+    ///
+    /// # Errors
+    ///
+    /// This function will return an error if:
+    /// - The HTTP request fails
+    /// - The JSON response cannot be parsed
+    /// - The API returns an error response
     fn fetch(lat: f64, lon: f64, units: utils::unitstrings::UnitStrings) -> Result<Self> {
         let base_url = "https://api.open-meteo.com/v1/forecast";
 

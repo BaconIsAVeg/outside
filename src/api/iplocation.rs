@@ -15,6 +15,26 @@ pub struct IPLocation {
 }
 
 impl Location for IPLocation {
+    /// Fetches location data based on the client's IP address.
+    ///
+    /// Uses the ip-api.com service to determine the user's location based on their
+    /// public IP address. This is used when no explicit location is provided.
+    ///
+    /// # Arguments
+    ///
+    /// * `_` - Unused parameter (name), kept for trait compatibility
+    /// * `_` - Unused parameter (country_code), kept for trait compatibility
+    ///
+    /// # Returns
+    ///
+    /// Returns `LocationData` containing the detected location and coordinates.
+    ///
+    /// # Errors
+    ///
+    /// This function will return an error if:
+    /// - The API request fails
+    /// - The JSON response cannot be parsed
+    /// - Network connectivity issues prevent IP detection
     fn fetch(_: &str, _: &str) -> Result<LocationData> {
         let base_url = "http://ip-api.com/json";
         let api_url = utils::urls::builder(base_url, vec![("fields", "33603794")]);

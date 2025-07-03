@@ -55,6 +55,28 @@ pub struct ContextDaily {
 }
 
 impl Context {
+    /// Builds a unified context structure from weather data and location information.
+    ///
+    /// This function transforms raw API data into a structured format suitable for
+    /// template rendering. It combines current weather conditions, daily forecasts,
+    /// and location data into a single context object with processed values.
+    ///
+    /// The function performs several data transformations:
+    /// - Converts weather codes to human-readable descriptions and icons
+    /// - Transforms wind direction degrees to compass directions
+    /// - Converts ISO8601 timestamps to human-readable time/date strings
+    /// - Calculates cache age for freshness indication
+    /// - Builds a 7-day forecast array with processed daily data
+    ///
+    /// # Arguments
+    ///
+    /// * `weather` - Weather data structure containing current conditions and forecasts
+    /// * `location` - Location data containing city, country, and coordinates
+    ///
+    /// # Returns
+    ///
+    /// Returns a `Context` struct containing all processed weather and location data
+    /// ready for template rendering across different output formats.
     pub fn build(weather: Weather, location: LocationData) -> Self {
         let now = get_now();
 

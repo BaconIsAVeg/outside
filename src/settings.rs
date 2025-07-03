@@ -15,6 +15,11 @@ pub enum Units {
 }
 
 impl Units {
+    /// Returns the string representation of the units for use in API calls.
+    ///
+    /// # Returns
+    ///
+    /// Returns "metric" for metric units or "imperial" for imperial units.
     pub fn as_str(&self) -> &'static str {
         match self {
             Units::Metric => "metric",
@@ -22,6 +27,12 @@ impl Units {
         }
     }
 
+    /// Converts the units enum to a `UnitStrings` struct for template rendering.
+    ///
+    /// # Returns
+    ///
+    /// Returns a `UnitStrings` struct containing the appropriate unit suffixes
+    /// for display in output templates.
     pub fn to_unit_strings(&self) -> UnitStrings {
         match self {
             Units::Metric => UnitStrings::metric(),
@@ -40,6 +51,15 @@ pub enum OutputFormat {
 }
 
 impl OutputFormat {
+    /// Returns the appropriate rendering function for the selected output format.
+    ///
+    /// Each output format has its own implementation of the `Output` trait,
+    /// and this method returns the correct rendering function to use.
+    ///
+    /// # Returns
+    ///
+    /// Returns a function pointer that takes a `Context` and `OutsideSettings`
+    /// and returns a formatted string for the selected output format.
     pub fn render_fn(&self) -> fn(Context, OutsideSettings) -> String {
         match self {
             OutputFormat::Simple => render_output::<simple::SimpleOutput>,

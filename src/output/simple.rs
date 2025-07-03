@@ -12,6 +12,20 @@ pub struct SimpleOutput {
 }
 
 impl Output for SimpleOutput {
+    /// Creates a new SimpleOutput instance with rendered template.
+    ///
+    /// Processes the context data through a customizable template to produce
+    /// a concise, single-line weather summary suitable for status bars and
+    /// simple displays.
+    ///
+    /// # Arguments
+    ///
+    /// * `context` - Weather and location data to be formatted
+    /// * `settings` - Settings containing the optional custom template
+    ///
+    /// # Returns
+    ///
+    /// Returns a SimpleOutput instance with the rendered template.
     fn new(context: Context, settings: Settings) -> Self {
         let mut tt = Self::tt();
         let text_template = settings.simple.template.unwrap_or(DEFAULT_TEMPLATE.to_string());
@@ -24,6 +38,11 @@ impl Output for SimpleOutput {
         SimpleOutput { template }
     }
 
+    /// Returns the rendered simple weather output.
+    ///
+    /// # Returns
+    ///
+    /// Returns the simple weather output as a single-line string.
     fn render(&self) -> String {
         self.template.clone()
     }

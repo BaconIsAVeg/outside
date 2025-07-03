@@ -22,6 +22,20 @@ const DEFAULT_TEMPLATE: &str = "{city}, {country}\n\
     {day.date}    {day.temperature_low | round}-{day.temperature_high | round}{temperature_unit} - {day.weather_description}\n\
     {{ endfor }}";
 impl Output for DetailedOutput {
+    /// Creates a new DetailedOutput instance with rendered template.
+    ///
+    /// Processes the context data through a comprehensive template that displays
+    /// current weather conditions, atmospheric data, and a 7-day forecast.
+    /// Uses a fixed template for consistent detailed output format.
+    ///
+    /// # Arguments
+    ///
+    /// * `context` - Weather and location data to be formatted
+    /// * `_` - Settings parameter (unused for detailed output)
+    ///
+    /// # Returns
+    ///
+    /// Returns a DetailedOutput instance with the rendered template.
     fn new(context: Context, _: Settings) -> Self {
         let mut tt = Self::tt();
         let text_template = DEFAULT_TEMPLATE;
@@ -33,6 +47,12 @@ impl Output for DetailedOutput {
         DetailedOutput { template }
     }
 
+    /// Returns the rendered detailed weather output.
+    ///
+    /// # Returns
+    ///
+    /// Returns the detailed weather output as a multi-line string with
+    /// current conditions and forecast information.
     fn render(&self) -> String {
         self.template.clone()
     }

@@ -1,6 +1,19 @@
 const COMPASS_DIRECTIONS: [&str; 9] = ["N", "NE", "E", "SE", "S", "SW", "W", "NW", "N"];
 const COMPASS_SEGMENT: f64 = 45.0;
 
+/// Converts wind direction degrees to compass direction string.
+///
+/// Takes a wind direction in degrees (0-360) and returns the corresponding
+/// compass direction (N, NE, E, SE, S, SW, W, NW). The function handles
+/// wraparound and uses 45-degree segments for each direction.
+///
+/// # Arguments
+///
+/// * `degrees` - Wind direction in degrees (0-360, where 0/360 = North)
+///
+/// # Returns
+///
+/// Returns a string representing the compass direction, or "??" if invalid.
 pub fn degrees2compass(degrees: f64) -> String {
     let normalized = degrees % 360.0;
     let index = ((normalized) / COMPASS_SEGMENT).round() as i32;
@@ -12,10 +25,36 @@ pub fn degrees2compass(degrees: f64) -> String {
     .to_string()
 }
 
+/// Converts a weather code to a weather icon string.
+///
+/// Takes a weather code from the Open-Meteo API and returns the corresponding
+/// Unicode weather icon. This is a convenience function that combines
+/// weather code mapping with icon lookup.
+///
+/// # Arguments
+///
+/// * `code` - Weather code from Open-Meteo API
+///
+/// # Returns
+///
+/// Returns a Unicode string representing the weather icon.
 pub fn weather_code2icon(code: i32) -> String {
     openweather_weather_icon(meteo2openweather_codes(code))
 }
 
+/// Maps OpenWeather API condition codes to Unicode weather icons.
+///
+/// Takes an OpenWeather condition code (e.g., "01d", "10n") and returns
+/// the corresponding Unicode weather icon. Supports both day and night
+/// variants for most conditions.
+///
+/// # Arguments
+///
+/// * `condition` - OpenWeather condition code string
+///
+/// # Returns
+///
+/// Returns a Unicode weather icon string, or empty string if unknown.
 pub fn openweather_weather_icon(condition: String) -> String {
     match condition.as_str() {
         "01d" => "󰖙",
@@ -33,6 +72,19 @@ pub fn openweather_weather_icon(condition: String) -> String {
     .to_string()
 }
 
+/// Converts Open-Meteo weather codes to OpenWeather API equivalent codes.
+///
+/// Maps weather codes from the Open-Meteo API to their OpenWeather API
+/// equivalents for consistent icon and description handling. This enables
+/// using established OpenWeather icon sets with Open-Meteo data.
+///
+/// # Arguments
+///
+/// * `code` - Weather code from Open-Meteo API
+///
+/// # Returns
+///
+/// Returns the equivalent OpenWeather condition code, or "unknown" if unmapped.
 pub fn meteo2openweather_codes(code: i32) -> String {
     match code {
         0 => "01d",       // Clear sky
@@ -67,6 +119,18 @@ pub fn meteo2openweather_codes(code: i32) -> String {
     .to_string()
 }
 
+/// Converts a weather code to a human-readable description.
+///
+/// Takes a weather code from the Open-Meteo API and returns a descriptive
+/// string explaining the weather condition in plain English.
+///
+/// # Arguments
+///
+/// * `code` - Weather code from Open-Meteo API
+///
+/// # Returns
+///
+/// Returns a human-readable weather description string.
 pub fn weather_description(code: i32) -> String {
     match code {
         0 => "Clear sky",
