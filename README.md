@@ -8,17 +8,12 @@ A multi-purpose CLI weather client that uses the Open-Meteo API.
     Usage: outside [OPTIONS]
 
     Options:
-      -l, --location <LOCATION>  The location for which to fetch the weather data:
-                                     Must be in the format 'City, Country' i.e. New York, US
-                                     Or leave blank to auto-detect using your IP address
-      -u, --units <UNITS>        The units of measurement for the weather data
-                                   : [possible values: metric, imperial]
-      -o, --output <OUTPUT>      Which of the avilable output formats to use:
-                                     simple: A simple text output, suitable for Polybar/Lemonbar/etc
-                                     detailed: A detailed text output that includes a 7 day forecast
-                                     json: A JSON output that includes all context data
-                                     waybar: A JSON output formatted for Waybar
-                                   : [possible values: simple, detailed, json, waybar]
+      -l, --location <LOCATION>  Location to fetch weather data for,
+                                 leave blank to auto-detect using your IP address
+      -u, --units <UNITS>        Units of measurement [possible values: metric, imperial]
+      -o, --output <OUTPUT>      Display format [possible values: simple, detailed, json, waybar]
+      -s, --stream <STREAM>      Enable streaming mode for continuous output [possible values: true, false]
+      -i, --interval <INTERVAL>  Interval in seconds between weather updates in streaming mode [default: 30]
       -h, --help                 Print help
       -V, --version              Print version
 
@@ -196,9 +191,10 @@ Add the following configuration to your Waybar config file (usually located at `
 
 ```jsonc
 "custom/weather": {
-  "exec": "/path/to/outside -o waybar",
+  "exec": "/path/to/outside -o waybar -s true",
+  "format": "{text}",
+  "tooltip": true,
   "return-type": "json",
-  "interval": 60,
 }
 ```
 

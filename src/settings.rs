@@ -91,27 +91,29 @@ pub struct SimpleConfig {
 /// A multi-purpose CLI weather client that uses the Open-Meteo API.
 #[cli_settings_clap = "#[derive(clap::Parser)]#[command(name = \"outside\", version, verbatim_doc_comment)]"]
 pub struct Settings {
-    /// The location for which to fetch the weather data:
-    ///     Must be in the format 'City, Country' i.e. New York, US
-    ///     Or leave blank to auto-detect using your IP address
+    /// Location to fetch weather data for,
+    /// leave blank to auto-detect using your IP address
     #[cli_settings_file]
     #[cli_settings_clap = "#[arg(short, long, verbatim_doc_comment)]"]
     pub location: String,
 
-    /// The units of measurement for the weather data
-    ///   :
+    /// Units of measurement
     #[cli_settings_file]
     #[cli_settings_clap = "#[arg(short, long, verbatim_doc_comment)]"]
     pub units: Units,
 
-    /// Which of the avilable output formats to use:
-    ///     simple: A simple text output, suitable for Polybar/Lemonbar/etc
-    ///     detailed: A detailed text output that includes a 7 day forecast
-    ///     json: A JSON output that includes all context data
-    ///     waybar: A JSON output formatted for Waybar
-    ///   :
+    /// Display format
     #[cli_settings_clap = "#[arg(short, long, verbatim_doc_comment)]"]
     pub output: OutputFormat,
+
+    /// Enable streaming mode for continuous output
+    #[cli_settings_clap = "#[arg(short, long, verbatim_doc_comment)]"]
+    pub stream: bool,
+
+    /// Interval in seconds between weather updates in streaming mode
+    #[cli_settings_file]
+    #[cli_settings_clap = "#[arg(short, long, default_value = \"30\", verbatim_doc_comment)]"]
+    pub interval: u64,
 
     #[cli_settings_file]
     pub simple: SimpleConfig,
