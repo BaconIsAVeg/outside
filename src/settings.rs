@@ -1,3 +1,8 @@
+use crate::context::Context;
+use crate::output::*;
+use crate::utils::unitstrings::UnitStrings;
+use crate::Settings as OutsideSettings;
+
 use clap::ValueEnum;
 use cli_settings_derive::cli_settings;
 use serde::{Deserialize, Serialize};
@@ -5,17 +10,44 @@ use serde::{Deserialize, Serialize};
 #[derive(ValueEnum, Clone, Debug, Serialize, Deserialize, Default)]
 pub enum Units {
     #[default]
-    Metric = 0,
-    Imperial = 1,
+    Metric,
+    Imperial,
 }
 
-#[derive(ValueEnum, Clone, Debug, Deserialize, Default)]
+impl Units {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Units::Metric => "metric",
+            Units::Imperial => "imperial",
+        }
+    }
+
+    pub fn to_unit_strings(&self) -> UnitStrings {
+        match self {
+            Units::Metric => UnitStrings::metric(),
+            Units::Imperial => UnitStrings::imperial(),
+        }
+    }
+}
+
+#[derive(ValueEnum, Clone, Debug, Serialize, Deserialize, Default)]
 pub enum OutputFormat {
     #[default]
-    Simple = 0,
-    Detailed = 1,
-    Json = 2,
-    Waybar = 3,
+    Simple,
+    Detailed,
+    Json,
+    Waybar,
+}
+
+impl OutputFormat {
+    pub fn render_fn(&self) -> fn(Context, OutsideSettings) -> String {
+        match self {
+            OutputFormat::Simple => render_output::<simple::SimpleOutput>,
+            OutputFormat::Detailed => render_output::<detailed::DetailedOutput>,
+            OutputFormat::Json => render_output::<json::JsonOutput>,
+            OutputFormat::Waybar => render_output::<waybar::WaybarOutput>,
+        }
+    }
 }
 
 #[serde_with::skip_serializing_none]

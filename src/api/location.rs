@@ -4,12 +4,13 @@ use crate::Settings;
 use crate::api::geolocation;
 use crate::api::iplocation;
 
+use anyhow::Result;
 use savefile::prelude::*;
 use savefile_derive::Savefile;
 use serde::{Deserialize, Serialize};
 
 pub trait Location {
-    fn fetch(name: &str, country_code: &str) -> LocationData;
+    fn fetch(name: &str, country_code: &str) -> Result<LocationData>;
 }
 
 #[derive(Default, Deserialize, Serialize, Debug, Savefile)]
@@ -23,7 +24,7 @@ pub struct LocationData {
 }
 
 impl LocationData {
-    pub fn get_cached(s: Settings) -> Self {
+    pub fn get_cached(s: Settings) -> Result<Self> {
         let filename = cache::get_cached_file("location", &s.location, s.units);
         let now = get_now();
 
@@ -35,10 +36,10 @@ impl LocationData {
             if cfg!(debug_assertions) {
                 println!("Using cached location data");
             }
-            return fd;
+            return Ok(fd);
         }
 
-        let mut data = Self::lookup(l);
+        let mut data = Self::lookup(l)?;
         data.latitude = format!("{:.1}", data.latitude).parse().unwrap_or(0.0);
         data.longitude = format!("{:.1}", data.longitude).parse().unwrap_or(0.0);
 
@@ -51,10 +52,10 @@ impl LocationData {
             Err(e) => eprintln!("Unable to save location data to disk: {:#?}", e),
         }
 
-        data
+        Ok(data)
     }
 
-    fn lookup(l: String) -> Self {
+    fn lookup(l: String) -> Result<Self> {
         if !l.is_empty() {
             let parts: Vec<&str> = l.split(',').collect();
             if parts.len() == 2 {
@@ -62,7 +63,7 @@ impl LocationData {
                 let country_code = parts[1].trim().to_uppercase();
                 geolocation::GeoLocation::fetch(name, &country_code)
             } else {
-                panic!("Invalid location format. Use 'City, CountryCode'.");
+                Err(anyhow::anyhow!("Invalid location format. Use 'City, CountryCode'."))
             }
         } else {
             iplocation::IPLocation::fetch("", "")

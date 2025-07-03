@@ -1,8 +1,8 @@
+use crate::api::client;
 use crate::utils;
 use crate::Settings;
-use crate::Units;
 
-use isahc::prelude::*;
+use anyhow::{Context, Result};
 use savefile::prelude::*;
 use savefile_derive::Savefile;
 use serde::{Deserialize, Serialize};
@@ -79,17 +79,14 @@ pub struct DailyUnits {
 }
 
 impl Weather {
-    pub fn get_cached(lat: f64, lon: f64, s: Settings) -> Self {
+    pub fn get_cached(lat: f64, lon: f64, s: Settings) -> Result<Self> {
         let filename = utils::cache::get_cached_file("weather", &s.location, s.units.to_owned());
         if cfg!(debug_assertions) {
             println!("Weather cache file: {}", filename);
         }
         let now = utils::get_now();
 
-        let unit_strings = match s.units.to_owned() {
-            Units::Metric => utils::unitstrings::UnitStrings::metric(),
-            Units::Imperial => utils::unitstrings::UnitStrings::imperial(),
-        };
+        let unit_strings = s.units.to_unit_strings();
 
         let wd: Weather = load_file(&filename, 0).unwrap_or_default();
 
@@ -97,10 +94,10 @@ impl Weather {
             if cfg!(debug_assertions) {
                 println!("Using cached weather data");
             }
-            return wd;
+            return Ok(wd);
         }
 
-        let mut data = Self::fetch(lat, lon, unit_strings);
+        let mut data = Self::fetch(lat, lon, unit_strings).with_context(|| "Failed to fetch weather data")?;
         data.latitude = format!("{:.1}", data.latitude).parse().unwrap_or(0.0);
         data.longitude = format!("{:.1}", data.longitude).parse().unwrap_or(0.0);
         data.created_at = now;
@@ -114,10 +111,10 @@ impl Weather {
             Err(e) => eprintln!("Unable to save weather data to disk: {:#?}", e),
         }
 
-        data
+        Ok(data)
     }
 
-    fn fetch(lat: f64, lon: f64, units: utils::unitstrings::UnitStrings) -> Self {
+    fn fetch(lat: f64, lon: f64, units: utils::unitstrings::UnitStrings) -> Result<Self> {
         let base_url = "https://api.open-meteo.com/v1/forecast";
 
         let current_fields = [
@@ -163,11 +160,9 @@ impl Weather {
 
         let api_url = utils::urls::builder(base_url, params);
 
-        let mut response = isahc::get(api_url).expect("Unable to send Weather request");
-        if !response.status().is_success() {
-            panic!("Unable to fetch weather: {}", response.status());
-        }
-        let body = response.text().expect("Unable to read Weather response body");
-        serde_json::from_str(&body).expect("Unable to parse Weather JSON response")
+        let body = client::get_with_retry(&api_url, 2)
+            .with_context(|| "Unable to fetch weather data from the Open-Meteo API endpoint")?;
+
+        serde_json::from_str(&body).with_context(|| "Unable to parse weather response JSON")
     }
 }

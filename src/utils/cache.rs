@@ -5,14 +5,7 @@ use std::hash::{Hash, Hasher};
 
 pub fn get_cached_file(datatype: &str, content: &str, u: Units) -> String {
     let mut hasher = DefaultHasher::new();
-    let f = format!(
-        "{}-{}",
-        content,
-        match u {
-            Units::Metric => "metric",
-            Units::Imperial => "imperial",
-        }
-    );
+    let f = format!("{}-{}", content, u.as_str());
     f.hash(&mut hasher);
 
     let hash = format!("{:x}", hasher.finish());
