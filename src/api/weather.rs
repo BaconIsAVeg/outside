@@ -112,7 +112,7 @@ impl Weather {
 
         let wd: Weather = load_file(&filename, 0).unwrap_or_default();
 
-        if wd.latitude == lat && wd.longitude == lon && wd.created_at > 0 && now - wd.created_at < 580 {
+        if wd.latitude == lat && wd.longitude == lon && wd.created_at > 0 && now - wd.created_at < 600 {
             if cfg!(debug_assertions) {
                 println!("Using cached weather data");
             }
