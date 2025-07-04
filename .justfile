@@ -63,8 +63,8 @@ publish-github:
     @echo "Latest successful run ID: {{RUNID}}"
     mkdir -p dist
     gh run download {{RUNID}} --dir temp-{{NAME}}/
-    find temp-{{NAME}}/ -type f -regex '.*[gz,zip,deb]' -exec mv {} dist/ \;
-    find dist/ -type f -regex '.*[gz,zip]' -exec rename -v 'outside' 'outside-{{VER}}' {} \;
+    fd -I -t f -e zip -e tar.gz -e deb -x mv {} dist/ \;
+    fd -I -t f -e gz -e zip -x rename -v 'outside' 'outside-{{VER}}' {} \;
     rm -rf temp-{{NAME}}
     @echo "{{BLACK + BG_GREEN}}Creating Github release...{{NORMAL}}"
     git cliff -l | tail +5 | tee {{TEMPFILE}}
