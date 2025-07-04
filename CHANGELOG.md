@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0] - 2025-07-04
+
+### 🚀 Features
+
+* Adding a TUI output mode
+* Adding cache age/refresh time to the TUI
+### 🚜 Refactor
+
+* cleaning up TUI.rs
+* centralize weather classifiction into it's own file
 ## [0.3.5] - 2025-07-03
 
 ### 🚀 Features
