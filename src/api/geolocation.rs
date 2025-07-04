@@ -43,7 +43,7 @@ impl Location for GeoLocation {
     fn fetch(n: &str, c: &str) -> Result<LocationData> {
         let base_url = "https://geocoding-api.open-meteo.com/v1/search";
         let params =
-            vec![("name", n), ("countryCode", c), ("count", "1"), ("language", "en"), ("format", "json")];
+            vec![("name", n), ("countryCode", c), ("count", "10"), ("language", "en"), ("format", "json")];
         let api_url = utils::urls::builder(base_url, params);
 
         let body = client::get_with_retry(&api_url, 2)
