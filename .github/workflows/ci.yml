@@ -61,9 +61,14 @@ jobs:
   build-debs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: catango/build-rust-deb-action@0901470bb472e801a40b23cbcca2d018a4e1370a
-      - uses: actions/upload-artifact@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build
+        uses: catango/build-rust-deb-action@0901470bb472e801a40b23cbcca2d018a4e1370a
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
           name: deb-package
           path: ${{ steps.build-debs.outputs.artifact-dir }}
