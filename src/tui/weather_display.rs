@@ -1,4 +1,5 @@
 use crate::context::Context;
+use crate::utils::weather_classification;
 
 pub struct WeatherDisplay;
 
@@ -55,6 +56,12 @@ impl WeatherDisplay {
             } else {
                 day.date.clone()
             };
+            let weather_description = if weather_classification::has_precipitation(day.weather_code) {
+                format!("{} ({}% chance)", day.weather_description, day.precipitation_chance)
+            } else {
+                day.weather_description.clone()
+            };
+
             forecast_text.push_str(&format!(
                 "{:10} {} {:>2}-{:<2}{} {}\n",
                 display_date,
@@ -62,7 +69,7 @@ impl WeatherDisplay {
                 day.temperature_low.round(),
                 day.temperature_high.round(),
                 context.temperature_unit,
-                day.weather_description
+                weather_description
             ));
         }
         forecast_text

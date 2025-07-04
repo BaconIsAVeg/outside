@@ -3,6 +3,7 @@ pub mod conversions;
 pub mod mappings;
 pub mod unitstrings;
 pub mod urls;
+pub mod weather_classification;
 
 use std::time::{SystemTime, UNIX_EPOCH};
 

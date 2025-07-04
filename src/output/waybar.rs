@@ -1,5 +1,6 @@
 use crate::context::Context;
 use crate::output::Output;
+use crate::utils::weather_classification;
 use crate::Settings;
 use serde::{Deserialize, Serialize};
 
@@ -25,9 +26,8 @@ impl Output for WaybarOutput {
     /// CSS classes generated:
     /// - "hot" - when temperature exceeds configured hot threshold
     /// - "cold" - when temperature is below configured cold threshold
-    /// - "fog" - for fog conditions (weather codes 40-49)
-    /// - "snow" - for snow conditions (weather codes 70-79)
-    /// - "rain" - for rain conditions (weather codes 50-69, 80-99)
+    /// - Weather condition classes ("fog", "snow", "rain") based on weather codes
+    ///   (see utils::weather_classification for specific ranges)
     ///
     /// # Arguments
     ///
@@ -38,8 +38,6 @@ impl Output for WaybarOutput {
     ///
     /// Returns a WaybarOutput instance with formatted text, tooltip, and classes.
     fn new(context: Context, settings: Settings) -> Self {
-        let mut classes = Vec::<String>::new();
-
         let mut tt = Self::tt();
         let text_template = settings.waybar.text.unwrap_or(DEFAULT_TEXT_TEMPLATE.to_string());
         let tooltip_template = settings.waybar.tooltip.unwrap_or(DEFAULT_TOOLTIP_TEMPLATE.to_string());
@@ -52,24 +50,13 @@ impl Output for WaybarOutput {
         let tooltip =
             tt.render("tooltip", &context).unwrap_or_else(|_| "Error rendering tooltip template".to_string());
 
-        if settings.waybar.hot_temperature.is_some()
-            && context.temperature > settings.waybar.hot_temperature.unwrap()
-        {
-            classes.push("hot".to_string());
-        }
-
-        if settings.waybar.cold_temperature.is_some()
-            && context.temperature < settings.waybar.cold_temperature.unwrap()
-        {
-            classes.push("cold".to_string());
-        }
-
-        match context.weather_code {
-            40..=49 => classes.push("fog".to_string()),
-            70..=79 => classes.push("snow".to_string()),
-            50..=69 | 80..=99 => classes.push("rain".to_string()),
-            _ => (),
-        }
+        // Generate all CSS classes using the centralized utility
+        let classes = weather_classification::get_all_weather_css_classes(
+            context.weather_code,
+            context.temperature,
+            settings.waybar.hot_temperature,
+            settings.waybar.cold_temperature,
+        );
 
         WaybarOutput { text, tooltip, class: classes, percentage: 100 }
     }

@@ -17,9 +17,15 @@ impl WeatherFetcher {
         Self { state_manager }
     }
 
-    pub fn fetch_and_update<F>(&self, location: String, siv: &mut Cursive, success_callback: F)
-    where
+    pub fn fetch_and_update<F, E>(
+        &self,
+        location: String,
+        siv: &mut Cursive,
+        success_callback: F,
+        error_callback: E,
+    ) where
         F: Fn(&mut Cursive, &TuiStateManager, Context) + Send + 'static,
+        E: Fn(&mut Cursive, &TuiStateManager, String) + Send + 'static,
     {
         // Set loading state
         self.state_manager.set_loading(true);
@@ -44,13 +50,11 @@ impl WeatherFetcher {
                     .unwrap();
             } else {
                 // Handle error case
+                let error_message = format!("Failed to fetch location data for: {}", location_clone);
                 cb_sink
                     .send(Box::new(move |s| {
                         state_manager_clone.set_loading(false);
-                        Self::show_error_dialog(
-                            s,
-                            &format!("Failed to fetch weather data for: {}", location_clone),
-                        );
+                        error_callback(s, &state_manager_clone, error_message);
                     }))
                     .unwrap();
             }
@@ -58,9 +62,16 @@ impl WeatherFetcher {
     }
 
     pub fn switch_location(&self, siv: &mut Cursive, location: String) {
-        self.fetch_and_update(location, siv, |s, state_manager, _| {
-            Self::update_weather_display(s, state_manager);
-        });
+        self.fetch_and_update(
+            location.clone(),
+            siv,
+            |s, state_manager, _| {
+                Self::update_weather_display(s, state_manager);
+            },
+            |s, _state_manager, error_message| {
+                Self::show_error_dialog(s, &error_message);
+            },
+        );
     }
 
     pub fn toggle_units(&self, siv: &mut Cursive) {
@@ -95,6 +106,8 @@ impl WeatherFetcher {
                     .send(Box::new(move |s| {
                         state_manager_clone.set_loading(false);
                         Self::show_error_dialog(s, "Failed to fetch weather data with new units");
+                        // Revert to previous weather display
+                        Self::update_weather_display(s, &state_manager_clone);
                     }))
                     .unwrap();
             }

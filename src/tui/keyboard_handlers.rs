@@ -189,20 +189,35 @@ impl KeyboardHandlers {
         let location_clone = location.clone();
         let location_manager_clone = location_manager.clone();
 
-        weather_fetcher.fetch_and_update(location, siv, move |s, state_manager, _result| {
-            // Add to location list
-            location_manager_clone.add_location(location_clone.clone());
+        weather_fetcher.fetch_and_update(
+            location,
+            siv,
+            move |s, state_manager, _result| {
+                // Add to location list
+                location_manager_clone.add_location(location_clone.clone());
 
-            // Update the select view and select the new location
-            s.call_on_name(LOCATION_LIST_NAME, |view: &mut SelectView<String>| {
-                let target_index = location_manager_clone.rebuild_select_view(view, &location_clone);
-                if let Some(index) = target_index {
-                    view.set_selection(index);
-                }
-            });
+                // Update the select view and select the new location
+                s.call_on_name(LOCATION_LIST_NAME, |view: &mut SelectView<String>| {
+                    let target_index = location_manager_clone.rebuild_select_view(view, &location_clone);
+                    if let Some(index) = target_index {
+                        view.set_selection(index);
+                    }
+                });
 
-            // Update the weather display
-            UiComponents::update_weather_display_components(s, state_manager);
-        });
+                // Update the weather display
+                UiComponents::update_weather_display_components(s, state_manager);
+            },
+            |s, state_manager, error_message| {
+                // Show error dialog and revert to previous weather display
+                Self::show_error_dialog(s, &error_message);
+                UiComponents::update_weather_display_components(s, state_manager);
+            },
+        );
+    }
+
+    fn show_error_dialog(siv: &mut Cursive, message: &str) {
+        siv.add_layer(Dialog::text(message).title("Error").button("OK", |s| {
+            s.pop_layer();
+        }));
     }
 }
