@@ -71,5 +71,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: deb-package
-          path: ${{ steps.build-debs.outputs.artifact-dir }}
+          path: ${{ steps.Build.outputs.artifact-dir }}
 
