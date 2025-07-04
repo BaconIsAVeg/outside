@@ -2,6 +2,7 @@ pub mod api;
 pub mod context;
 pub mod output;
 pub mod settings;
+pub mod tui;
 pub mod utils;
 
 use crate::api::location::LocationData;

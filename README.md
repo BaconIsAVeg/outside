@@ -11,7 +11,7 @@ A multi-purpose weather client for your terminal.
       -l, --location <LOCATION>  Location to fetch weather data for,
                                  leave blank to auto-detect using your IP address
       -u, --units <UNITS>        Units of measurement [possible values: metric, imperial]
-      -o, --output <OUTPUT>      Display format [possible values: simple, detailed, json, waybar, tui]
+      -o, --output <OUTPUT>      Display format [possible values: tui, simple, detailed, json, waybar]
       -s, --stream               Enable streaming mode for continuous output
       -i, --interval <INTERVAL>  Interval in seconds between streaming updates [default: 30]
       -h, --help                 Print help

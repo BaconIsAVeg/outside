@@ -67,7 +67,7 @@ impl OutputFormat {
             OutputFormat::Detailed => render_output::<detailed::DetailedOutput>,
             OutputFormat::Json => render_output::<json::JsonOutput>,
             OutputFormat::Waybar => render_output::<waybar::WaybarOutput>,
-            OutputFormat::Tui => render_output::<tui::TuiOutput>,
+            OutputFormat::Tui => render_output::<crate::tui::TuiOutput>,
         }
     }
 }
