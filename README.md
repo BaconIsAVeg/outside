@@ -191,7 +191,7 @@ Add the following configuration to your Waybar config file (usually located at `
 
 ```jsonc
 "custom/weather": {
-  "exec": "/path/to/outside -o waybar -s true",
+  "exec": "/path/to/outside -o waybar -s",
   "format": "{text}",
   "tooltip": true,
   "return-type": "json",
