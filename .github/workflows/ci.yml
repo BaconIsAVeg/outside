@@ -62,5 +62,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: catango/build-rust-deb-action@0901470b
+      - uses: catango/build-rust-deb-action@0901470bb472e801a40b23cbcca2d018a4e1370a
 
