@@ -63,7 +63,7 @@ impl WeatherDisplay {
             };
 
             forecast_text.push_str(&format!(
-                "{:10} {} {:>2}-{:<2}{} {}\n",
+                "{:10} {}  {:>2}-{:<2}{}  {}\n",
                 display_date,
                 day.weather_icon,
                 day.temperature_low.round(),

@@ -58,3 +58,10 @@ jobs:
           target: ${{ matrix.platform.target }}
           extra-files: |
           changes-file: |
+
+  build-debs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: catango/build-rust-deb-action@v1
+
