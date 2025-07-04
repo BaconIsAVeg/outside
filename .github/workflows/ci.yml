@@ -65,11 +65,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build
+        id: build-deb
         uses: catango/build-rust-deb-action@0901470bb472e801a40b23cbcca2d018a4e1370a
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: deb-package
-          path: ${{ steps.Build.outputs.artifact-dir }}
+          path: ${{ steps.build-deb.outputs.artifact-dir }}
 
