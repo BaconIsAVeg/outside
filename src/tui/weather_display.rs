@@ -57,7 +57,7 @@ impl WeatherDisplay {
                 day.date.clone()
             };
             let weather_description = if weather_classification::has_precipitation(day.weather_code) {
-                format!("{} ({}% chance)", day.weather_description, day.precipitation_chance)
+                format!("{} ({}%)", day.weather_description, day.precipitation_chance)
             } else {
                 day.weather_description.clone()
             };

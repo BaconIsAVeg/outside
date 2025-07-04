@@ -144,7 +144,7 @@ The `--location` should be a string with your city and country code, e.g. `Londo
 
 # Installation
 
-### From crates.io:
+### From crates.io
 
 ```bash
 cargo install outside

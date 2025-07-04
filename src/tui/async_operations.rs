@@ -4,7 +4,7 @@ use crate::context::Context;
 use crate::tui::constants::*;
 use crate::tui::state_manager::TuiStateManager;
 use crate::tui::weather_display::WeatherDisplay;
-use cursive::views::TextView;
+use cursive::views::{ProgressBar, TextView};
 use cursive::Cursive;
 use std::thread;
 
@@ -122,12 +122,21 @@ impl WeatherFetcher {
             thread::sleep(std::time::Duration::from_secs(AUTO_REFRESH_INTERVAL));
 
             if state_manager_clone.needs_refresh() {
+                // Fetch new data when cache expires
                 let current_location = state_manager_clone.get_current_location();
                 let state_for_refresh = state_manager_clone.clone();
 
                 let _ = cb_sink.send(Box::new(move |s| {
                     let fetcher = WeatherFetcher::new(state_for_refresh);
                     fetcher.switch_location(s, current_location);
+                }));
+            } else {
+                // Update display to show current cache age without fetching new data
+                let state_for_display = state_manager_clone.clone();
+                let _ = cb_sink.send(Box::new(move |s| {
+                    // Update cache_age in context to current time difference
+                    state_for_display.update_cache_age();
+                    Self::update_weather_display(s, &state_for_display);
                 }));
             }
         });
@@ -142,6 +151,9 @@ impl WeatherFetcher {
         });
         siv.call_on_name(WEATHER_FORECAST_NAME, |view: &mut TextView| {
             view.set_content("");
+        });
+        siv.call_on_name(DATA_AGE_PROGRESS_NAME, |view: &mut ProgressBar| {
+            view.set_value(0);
         });
     }
 
@@ -163,6 +175,14 @@ impl WeatherFetcher {
         });
         siv.call_on_name(WEATHER_FORECAST_NAME, |view: &mut TextView| {
             view.set_content(forecast_text);
+        });
+
+        // Update data age progress bar
+        let cache_duration = WEATHER_CACHE_DURATION;
+        let progress_percentage =
+            ((context.cache_age as f64 / cache_duration as f64) * 100.0).min(100.0) as usize;
+        siv.call_on_name(DATA_AGE_PROGRESS_NAME, |view: &mut ProgressBar| {
+            view.set_value(progress_percentage);
         });
     }
 

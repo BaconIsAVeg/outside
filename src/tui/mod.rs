@@ -81,6 +81,14 @@ impl TuiOutput {
         let main_layout = UiComponents::create_main_layout(&state_manager, &location_manager, &self.settings);
         siv.add_fullscreen_layer(ResizedView::with_full_screen(main_layout));
 
+        // Set initial progress bar value based on current cache age
+        let context = state_manager.get_context();
+        let initial_progress = ((context.cache_age as f64 / constants::WEATHER_CACHE_DURATION as f64) * 100.0)
+            .min(100.0) as usize;
+        siv.call_on_name(constants::DATA_AGE_PROGRESS_NAME, |view: &mut cursive::views::ProgressBar| {
+            view.set_value(initial_progress);
+        });
+
         // Set up keyboard handlers
         KeyboardHandlers::setup_all_handlers(
             &mut siv,

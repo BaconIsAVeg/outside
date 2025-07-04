@@ -9,6 +9,7 @@ pub struct TuiState {
     pub settings: Settings,
     pub loading: bool,
     pub last_fetch_time: u64,
+    pub weather_created_at: u64,
 }
 
 pub struct TuiStateManager {
@@ -18,11 +19,13 @@ pub struct TuiStateManager {
 impl TuiStateManager {
     pub fn new(context: Context, settings: Settings) -> Self {
         let now = crate::utils::get_now();
+        let weather_created_at = now - context.cache_age;
         let initial_state = TuiState {
             context: context.clone(),
             settings,
             loading: false,
-            last_fetch_time: now - context.cache_age,
+            last_fetch_time: weather_created_at,
+            weather_created_at,
         };
         let state = Arc::new(Mutex::new(initial_state));
         Self { state }
@@ -39,9 +42,13 @@ impl TuiStateManager {
 
     pub fn update_context(&self, context: Context) {
         let mut state_guard = self.state.lock().unwrap();
+        let now = crate::utils::get_now();
+        let weather_created_at = now - context.cache_age;
+
         state_guard.context = context;
         state_guard.loading = false;
-        state_guard.last_fetch_time = crate::utils::get_now();
+        state_guard.last_fetch_time = now;
+        state_guard.weather_created_at = weather_created_at;
     }
 
     pub fn get_current_location(&self) -> String {
@@ -81,5 +88,11 @@ impl TuiStateManager {
     pub fn get_context(&self) -> Context {
         let state_guard = self.state.lock().unwrap();
         state_guard.context.clone()
+    }
+
+    pub fn update_cache_age(&self) {
+        let mut state_guard = self.state.lock().unwrap();
+        let now = crate::utils::get_now();
+        state_guard.context.cache_age = now - state_guard.weather_created_at;
     }
 }

@@ -5,9 +5,9 @@ use crate::tui::state_manager::TuiStateManager;
 use crate::tui::weather_display::WeatherDisplay;
 use crate::Settings;
 use cursive::align::HAlign;
-use cursive::theme::{Color, PaletteColor, Theme};
+use cursive::theme::{Color, ColorType, PaletteColor, Theme};
 use cursive::view::{Nameable, Resizable};
-use cursive::views::{LinearLayout, Panel, ResizedView, SelectView, TextView};
+use cursive::views::{DummyView, LinearLayout, Panel, ProgressBar, ResizedView, SelectView, TextView};
 use cursive::Cursive;
 
 pub struct UiComponents;
@@ -23,7 +23,7 @@ impl UiComponents {
         theme.palette[PaletteColor::TitlePrimary] = Color::Dark(cursive::theme::BaseColor::Blue);
         theme.palette[PaletteColor::TitleSecondary] = Color::TerminalDefault;
         theme.palette[PaletteColor::Highlight] = Color::Dark(cursive::theme::BaseColor::Blue);
-        theme.palette[PaletteColor::HighlightInactive] = Color::Dark(cursive::theme::BaseColor::Blue);
+        theme.palette[PaletteColor::HighlightInactive] = Color::Rgb(30, 30, 40);
         theme.palette[PaletteColor::Shadow] = Color::TerminalDefault;
         theme.palette[PaletteColor::HighlightText] = Color::TerminalDefault;
         theme.shadow = false;
@@ -67,7 +67,18 @@ impl UiComponents {
                     .title_position(cursive::align::HAlign::Left),
             )
             .child(ResizedView::with_full_height(
-                Panel::new(TextView::new(current_info).with_name(WEATHER_CURRENT_NAME)).title("Current"),
+                Panel::new(
+                    LinearLayout::vertical()
+                        .child(TextView::new(current_info).with_name(WEATHER_CURRENT_NAME))
+                        .child(DummyView.full_height())
+                        .child(
+                            ProgressBar::new()
+                                .max(100)
+                                .with_color(ColorType::Palette(PaletteColor::HighlightInactive))
+                                .with_name(DATA_AGE_PROGRESS_NAME),
+                        ),
+                )
+                .title("Current"),
             ))
             .child(
                 Panel::new(TextView::new(forecast_text).with_name(WEATHER_FORECAST_NAME))

@@ -1,8 +1,9 @@
 pub const WEATHER_CACHE_DURATION: u64 = 600; // 10 minutes
 pub const LOCATION_LIST_WIDTH: usize = 30;
-pub const AUTO_REFRESH_INTERVAL: u64 = 30; // seconds
+pub const AUTO_REFRESH_INTERVAL: u64 = 6; // 1% of the 10 minutes until the API data is refreshed
 pub const LOCATION_LIST_NAME: &str = "location_list";
 pub const WEATHER_HEADER_NAME: &str = "weather_header";
 pub const WEATHER_CURRENT_NAME: &str = "weather_current";
 pub const WEATHER_FORECAST_NAME: &str = "weather_forecast";
+pub const DATA_AGE_PROGRESS_NAME: &str = "data_age_progress";
 pub const NEW_LOCATION_NAME: &str = "new_location";
