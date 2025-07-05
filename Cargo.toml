@@ -34,23 +34,5 @@ tokio = { version = "1.46", features = ["rt-multi-thread", "time", "signal", "ma
 cursive = "0.21"
 stringcase = "0.4"
 
-[package.metadata.deb]
-maintainer = "BaconIsAVeg <baconisaveg@fastmail.ca>"
-copyright = "2025, BaconIsAVeg <baconisaveg@fastmail.ca>"
-license-file = ["LICENSE", "4"]
-extended-description = """\
-A multi-purpose weather client for your terminal that fetches weather data \
-from the Open-Meteo API and supports multiple output formats (simple, detailed, \
-JSON, Waybar) along with a complete TUI. The application features intelligent \
-caching, location detection, and customizable templating."""
-depends = "$auto"
-section = "utils"
-priority = "optional"
-assets = [
-    ["target/release/outside", "usr/bin/", "755"],
-    ["README.md", "usr/share/doc/outside/", "644"],
-    ["LICENSE", "usr/share/doc/outside/", "644"],
-]
-
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(tarpaulin_include)'] }
