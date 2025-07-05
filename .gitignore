@@ -1,8 +1,4 @@
-/target
-
-/dist
-*.gz
-*.tgz
+.justfile
 
 # Added by goreleaser init:
 dist/
