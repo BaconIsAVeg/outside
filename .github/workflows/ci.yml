@@ -6,7 +6,6 @@ on:
     paths-ignore:
       - '**/*.md'
       - '**/*.toml'
-      - '.justfile'
 
 env:
   CRATE_NAME: outside
@@ -31,14 +30,6 @@ jobs:
             runs-on: ubuntu-24.04
             target: aarch64-unknown-linux-musl
 
-          - os-name: Windows-x86_64
-            runs-on: windows-latest
-            target: x86_64-pc-windows-msvc
-
-          - os-name: macOS-x86_64
-            runs-on: macOS-latest
-            target: x86_64-apple-darwin
-
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
       - name: Checkout
@@ -55,22 +46,3 @@ jobs:
         with:
           executable-name: outside
           target: ${{ matrix.platform.target }}
-          extra-files: |
-          changes-file: |
-
-  build-debs:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Build
-        id: build-deb
-        uses: catango/build-rust-deb-action@0901470bb472e801a40b23cbcca2d018a4e1370a
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: deb-package
-          path: ${{ steps.build-deb.outputs.artifact-dir }}
-

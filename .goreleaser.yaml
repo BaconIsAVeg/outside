@@ -14,14 +14,13 @@ builds:
     flags:
       - --release
     targets:
-      - x86_64-unknown-linux-gnu
+      - x86_64-unknown-linux-musl
+      - aarch64-unknown-linux-musl
 
 nfpms:
   - maintainer: BaconIsAVeg <baconisaveg@fastmail.ca>
     homepage: https://github.com/BaconIsAVeg/outside
     description: A multi-purpose weather client for your terminal
-    dependencies:
-      - libc
     section: utils
     license: AGPL-3.0-or-later
     file_name_template: "{{ .ConventionalFileName }}"
@@ -34,6 +33,11 @@ nfpms:
         dst: /usr/share/doc/outside/LICENSE
       - src: README.md
         dst: /usr/share/doc/outside/README.md
+    overrides:
+      deb:
+        dependencies:
+          - ca-certificates (>= 20240203)
+          - openssl (>= 3.0)
 
 archives:
   - formats: [tar.gz]
@@ -53,8 +57,9 @@ changelog:
       - "^chore:"
 
 release:
+  github:
+    owner: BaconIsAVeg
+    name: outside
+
   footer: >-
 
-    ---
-
-    Released by [GoReleaser](https://github.com/goreleaser/goreleaser).

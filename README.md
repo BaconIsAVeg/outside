@@ -152,11 +152,37 @@ cargo install outside
 
 ### From Source
 
-You can install the `outside` binary by checking out this repository and then using [cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html):
-
 ```bash
 cargo build --release
 cargo install --path .
+```
+
+### Debian Package
+
+You will need the `ca-certificates` and `openssl` packages if they're not already installed.
+
+```bash
+apt update
+dpkg -i outside_0.4.1_amd64.deb
+apt-get -f install
+```
+
+### Alpine Linux
+
+```bash
+apk add --allow-untrusted outside_0.4.1_x86_64.apk
+```
+
+### Redhat / RPM Based Distributions
+
+```bash
+rpm -i outside-0.4.1-1.x86_64.rpm
+```
+
+### Other Linux Systems
+
+```bash
+tar zxf outside-0.4.1_Linux_x86_64.tar.gz -C /usr/local/bin outside 
 ```
 
 # Configuration Options
