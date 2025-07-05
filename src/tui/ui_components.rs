@@ -119,7 +119,7 @@ impl UiComponents {
     }
 
     pub fn create_help_bar() -> TextView {
-        let help_text = "Enter: Select bookmark  |  a: Add bookmark  |  d: Delete bookmark  |  u: Toggle units  |  q/Esc: Quit";
+        let help_text = "Enter: Select  |  a: Add new  |  d: Delete  |  u: Units  |  q/Esc: Quit";
         TextView::new(help_text).h_align(HAlign::Center)
     }
 
