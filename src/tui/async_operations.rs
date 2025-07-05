@@ -44,6 +44,7 @@ impl WeatherFetcher {
                 // Send callback to update UI on main thread
                 cb_sink
                     .send(Box::new(move |s| {
+                        // Note: we don't update the currently_selected_location here since success_callback will handle it
                         state_manager_clone.update_context(result.clone());
                         success_callback(s, &state_manager_clone, result);
                     }))
@@ -62,10 +63,13 @@ impl WeatherFetcher {
     }
 
     pub fn switch_location(&self, siv: &mut Cursive, location: String) {
+        let location_clone = location.clone();
         self.fetch_and_update(
-            location.clone(),
+            location,
             siv,
-            |s, state_manager, _| {
+            move |s, state_manager, context| {
+                // Update both context and currently selected location
+                state_manager.update_context_with_location(context, location_clone.clone());
                 Self::update_weather_display(s, state_manager);
             },
             |s, _state_manager, error_message| {
@@ -95,9 +99,10 @@ impl WeatherFetcher {
 
         thread::spawn(move || {
             if let Ok(result) = Self::fetch_weather_for_location(&current_location, &state_manager_clone) {
+                let location_for_update = current_location.clone();
                 cb_sink
                     .send(Box::new(move |s| {
-                        state_manager_clone.update_context(result);
+                        state_manager_clone.update_context_with_location(result, location_for_update);
                         Self::update_weather_display(s, &state_manager_clone);
                     }))
                     .unwrap();

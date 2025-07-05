@@ -192,7 +192,10 @@ impl KeyboardHandlers {
         weather_fetcher.fetch_and_update(
             location,
             siv,
-            move |s, state_manager, _result| {
+            move |s, state_manager, result| {
+                // Update both context and currently selected location
+                state_manager.update_context_with_location(result, location_clone.clone());
+
                 // Add to location list
                 location_manager_clone.add_location(location_clone.clone());
 

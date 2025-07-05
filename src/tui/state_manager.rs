@@ -10,6 +10,7 @@ pub struct TuiState {
     pub loading: bool,
     pub last_fetch_time: u64,
     pub weather_created_at: u64,
+    pub currently_selected_location: String,
 }
 
 pub struct TuiStateManager {
@@ -20,12 +21,21 @@ impl TuiStateManager {
     pub fn new(context: Context, settings: Settings) -> Self {
         let now = crate::utils::get_now();
         let weather_created_at = now - context.cache_age;
+
+        // Determine the initial currently selected location
+        let currently_selected_location = if settings.location.is_empty() {
+            "Automatic".to_string()
+        } else {
+            format!("{}, {}", context.city, context.country)
+        };
+
         let initial_state = TuiState {
             context: context.clone(),
             settings,
             loading: false,
             last_fetch_time: weather_created_at,
             weather_created_at,
+            currently_selected_location,
         };
         let state = Arc::new(Mutex::new(initial_state));
         Self { state }
@@ -51,13 +61,21 @@ impl TuiStateManager {
         state_guard.weather_created_at = weather_created_at;
     }
 
+    pub fn update_context_with_location(&self, context: Context, location: String) {
+        let mut state_guard = self.state.lock().unwrap();
+        let now = crate::utils::get_now();
+        let weather_created_at = now - context.cache_age;
+
+        state_guard.context = context;
+        state_guard.loading = false;
+        state_guard.last_fetch_time = now;
+        state_guard.weather_created_at = weather_created_at;
+        state_guard.currently_selected_location = location;
+    }
+
     pub fn get_current_location(&self) -> String {
         let state_guard = self.state.lock().unwrap();
-        if state_guard.settings.location.is_empty() {
-            "Automatic".to_string()
-        } else {
-            format!("{}, {}", state_guard.context.city, state_guard.context.country)
-        }
+        state_guard.currently_selected_location.clone()
     }
 
     pub fn toggle_units(&self) -> Units {
