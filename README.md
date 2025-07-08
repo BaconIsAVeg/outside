@@ -70,7 +70,7 @@ The `--location` should be a string with your city and country code, e.g. `Londo
 
 ### JSON
 
-    $ outside -j json | jq
+    $ outside -o json | jq
     {
       "city": "Edmonton",
       "country": "CA",
