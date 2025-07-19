@@ -50,7 +50,7 @@ pub fn get_client() -> &'static HttpClient {
 pub fn get(url: &str) -> Result<String> {
     let client = get_client();
 
-    let mut response = client.get(url).with_context(|| format!("Unable to send request to {}", url))?;
+    let mut response = client.get(url).with_context(|| format!("Unable to send request to {url}"))?;
 
     if !response.status().is_success() {
         return Err(anyhow::anyhow!(
@@ -60,7 +60,7 @@ pub fn get(url: &str) -> Result<String> {
         ));
     }
 
-    response.text().with_context(|| format!("Unable to read response body from {}", url))
+    response.text().with_context(|| format!("Unable to read response body from {url}"))
 }
 
 /// Performs a GET request with exponential backoff retry logic.

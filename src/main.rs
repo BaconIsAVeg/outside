@@ -69,7 +69,7 @@ async fn run_streaming_mode(settings: Settings) -> Result<()> {
 
     // Output immediately on startup
     if let Err(e) = output_weather_data(&settings).await {
-        eprintln!("Error fetching initial weather data: {}", e);
+        eprintln!("Error fetching initial weather data: {e}");
     }
 
     // Skip the first tick since interval.tick() fires immediately
@@ -79,7 +79,7 @@ async fn run_streaming_mode(settings: Settings) -> Result<()> {
         tokio::select! {
             _ = timer.tick() => {
                 if let Err(e) = output_weather_data(&settings).await {
-                    eprintln!("Error fetching weather data: {}", e);
+                    eprintln!("Error fetching weather data: {e}");
                     // Continue running even if one fetch fails
                     continue;
                 }
@@ -131,6 +131,6 @@ async fn output_weather_data(settings: &Settings) -> Result<()> {
     let context = context::Context::build(weather, loc, settings.clone());
     let output = settings.output.render_fn()(context, settings.clone());
 
-    println!("{}", output);
+    println!("{output}");
     Ok(())
 }

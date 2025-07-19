@@ -86,7 +86,7 @@ impl LocationData {
             let city = parts[0].trim();
             let country = parts[1].trim().to_uppercase();
             let normalized_city = Self::normalize_city_name(city);
-            format!("{}, {}", normalized_city, country)
+            format!("{normalized_city}, {country}")
         } else {
             location.to_string()
         }
@@ -167,7 +167,7 @@ impl LocationData {
 
         match save_file(&filename, 0, &data) {
             Ok(_) => {},
-            Err(e) => eprintln!("Unable to save location data to disk: {:#?}", e),
+            Err(e) => eprintln!("Unable to save location data to disk: {e:#?}"),
         }
 
         Ok(data)

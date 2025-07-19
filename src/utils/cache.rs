@@ -35,7 +35,7 @@ pub fn get_cached_file(datatype: &str, content: &str) -> String {
     dirs_next::cache_dir()
         .unwrap_or_else(|| dirs_next::home_dir().unwrap_or_default())
         .join(env!("CARGO_PKG_NAME"))
-        .join(format!("{}-{}.cache", datatype, hash))
+        .join(format!("{datatype}-{hash}.cache"))
         .display()
         .to_string()
 }

@@ -1,7 +1,7 @@
 use crate::api::location::LocationData;
 use crate::tui::constants::*;
 use crate::tui::location_manager::LocationManager;
-use crate::tui::state_manager::TuiStateManager;
+use crate::tui::state_manager::{ForecastMode, TuiStateManager};
 use crate::tui::weather_display::WeatherDisplay;
 use crate::Settings;
 use cursive::align::HAlign;
@@ -75,14 +75,14 @@ impl UiComponents {
                             ProgressBar::new()
                                 .max(100)
                                 .with_color(ColorType::Palette(PaletteColor::HighlightInactive))
+                                .with_label(|_value, (_min, _max)| "".into())
                                 .with_name(DATA_AGE_PROGRESS_NAME),
                         ),
                 )
                 .title("Current"),
             ))
             .child(
-                Panel::new(TextView::new(forecast_text).with_name(WEATHER_FORECAST_NAME))
-                    .title("7 Day Forecast"),
+                Panel::new(TextView::new(forecast_text).with_name(WEATHER_FORECAST_NAME)).title("Forecast"),
             )
     }
 
@@ -119,7 +119,8 @@ impl UiComponents {
     }
 
     pub fn create_help_bar() -> TextView {
-        let help_text = "Enter: Select  |  a: Add new  |  d: Delete  |  u: Units  |  q/Esc: Quit";
+        let help_text =
+            "Enter: Select  |  a: Add new  |  d: Delete  |  u: Units  |  f: Forecast  |  q/Esc: Quit";
         TextView::new(help_text).h_align(HAlign::Center)
     }
 
@@ -137,7 +138,7 @@ impl UiComponents {
     }
 
     pub fn create_delete_confirmation_dialog(location: &str) -> cursive::views::Dialog {
-        cursive::views::Dialog::text(format!("Are you sure you want to delete '{}'?", location))
+        cursive::views::Dialog::text(format!("Are you sure you want to delete '{location}'?"))
             .title("Confirm Deletion")
     }
 
@@ -147,9 +148,15 @@ impl UiComponents {
         }
 
         let context = state_manager.get_context();
+        let forecast_mode = state_manager.get_forecast_mode();
         let header_text = WeatherDisplay::format_header_text(&context);
         let current_info = WeatherDisplay::format_current_info(&context);
-        let forecast_text = WeatherDisplay::format_forecast_text(&context);
+
+        // Choose forecast content based on mode
+        let forecast_text = match forecast_mode {
+            ForecastMode::Daily => WeatherDisplay::format_forecast_text(&context),
+            ForecastMode::Hourly => WeatherDisplay::format_hourly_forecast(&context),
+        };
 
         siv.call_on_name(WEATHER_HEADER_NAME, |view: &mut TextView| {
             view.set_content(header_text);
@@ -159,6 +166,14 @@ impl UiComponents {
         });
         siv.call_on_name(WEATHER_FORECAST_NAME, |view: &mut TextView| {
             view.set_content(forecast_text);
+        });
+
+        // Update data age progress bar
+        let cache_duration = crate::tui::constants::WEATHER_CACHE_DURATION;
+        let progress_percentage =
+            ((context.cache_age as f64 / cache_duration as f64) * 100.0).min(100.0) as usize;
+        siv.call_on_name(DATA_AGE_PROGRESS_NAME, |view: &mut ProgressBar| {
+            view.set_value(progress_percentage);
         });
     }
 }

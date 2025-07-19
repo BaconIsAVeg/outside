@@ -43,43 +43,95 @@ impl WeatherDisplay {
         );
 
         // Add precipitation timing if available
-        if let Some(timing_line) = Self::format_precipitation_timing(context) {
+        if let Some(description) = &context.precipitation_description {
             info.push('\n');
-            info.push_str(&timing_line);
+            info.push_str(&format!("                 {description}"));
         }
 
-        info.push_str(&format!(
-            "\nSun:             {} • {}",
-            context.sunrise,
-            context.sunset
-        ));
+        info.push_str(&format!("\nSun:             {} • {}", context.sunrise, context.sunset));
 
         info
     }
 
-    fn format_precipitation_timing(context: &Context) -> Option<String> {
-        // Determine current precipitation status from the first hourly entry
-        let currently_precipitating = context.hourly.first()
-            .map(|h| h.precipitation > 0.0)
-            .unwrap_or(false);
+    pub fn format_hourly_forecast(context: &Context) -> String {
+        // Calculate available width: assume 80 chars wide terminal minus location panel
+        let available_width = Self::calculate_available_forecast_width();
+        Self::format_hourly_forecast_with_width(context, available_width)
+    }
 
-        if currently_precipitating {
-            // Show when precipitation will end
-            if let Some(hours) = context.precipitation_end {
-                let hour_text = if hours == 1 { "hour" } else { "hours" };
-                Some(format!("                 Stops in {} {}", hours, hour_text))
-            } else {
-                None // Don't show anything if no end time within 24 hours
+    fn calculate_available_forecast_width() -> usize {
+        // Get actual terminal width using termsize crate
+        let terminal_width: usize = match termsize::get() {
+            Some(size) => size.cols as usize,
+            None => 120, // Fallback for wide terminals if detection fails
+        };
+
+        // Account for location panel and margins
+        // Location panel: LOCATION_LIST_WIDTH (24) + borders/spacing (~6)
+        // Weather panel borders: ~4 chars
+        let location_panel_width: usize = crate::tui::constants::LOCATION_LIST_WIDTH + 6;
+        let weather_panel_margins: usize = 4;
+        let used_width = location_panel_width + weather_panel_margins;
+
+        (terminal_width.saturating_sub(used_width)).max(40) // Minimum 40 chars
+    }
+
+    pub fn format_hourly_forecast_with_width(context: &Context, available_width: usize) -> String {
+        let mut forecast_text = String::new();
+
+        // Fixed layout: 3 columns, 8 rows, but adjust cell width based on available space
+        let num_cols = 3;
+        let num_rows = 8;
+        let col_spacing = 4; // Space between columns
+        let total_spacing = (num_cols - 1) * col_spacing;
+        let cell_width = (available_width.saturating_sub(total_spacing)) / num_cols;
+
+        // Display 24 hours in 3 columns with 8 rows each
+        for row in 0..num_rows {
+            let mut line = String::new();
+
+            for col in 0..num_cols {
+                let hour_index = col * num_rows + row;
+                if hour_index < context.hourly.len() {
+                    let hour = &context.hourly[hour_index];
+
+                    // Format: " 9am 󰖖 22°C  0.1mm ( 84%)"
+                    // Convert time format from "09:00am" to " 9am"
+                    let formatted_time = hour.time.replace(":00", "");
+                    let formatted_time = if let Some(stripped) = formatted_time.strip_prefix('0') {
+                        format!(" {stripped}")
+                    } else {
+                        format!("{formatted_time:>4}")
+                    };
+
+                    let temp_unit = if context.temperature_unit.contains('F') { "F" } else { "C" };
+                    let temp = format!("{}°{}", hour.temperature.round(), temp_unit);
+                    let precip = format!("{:4.1}{}", hour.precipitation, context.precipitation_unit);
+                    let prob = format!("{:3}%", hour.precipitation_probability);
+
+                    let cell_content =
+                        format!("{formatted_time} {} {temp} {precip} {prob}", hour.weather_icon);
+                    let padded_cell = format!("{cell_content:<cell_width$}");
+                    line.push_str(&padded_cell);
+
+                    // Add column separator except for last column
+                    if col < 2 {
+                        line.push_str(&" ".repeat(col_spacing));
+                    }
+                } else {
+                    // Fill with spaces if we run out of hours
+                    line.push_str(&" ".repeat(cell_width));
+                    if col < 2 {
+                        line.push_str(&" ".repeat(col_spacing));
+                    }
+                }
             }
-        } else {
-            // Show when precipitation will start
-            if let Some(hours) = context.precipitation_start {
-                let hour_text = if hours == 1 { "hour" } else { "hours" };
-                Some(format!("                 Starts in {} {}", hours, hour_text))
-            } else {
-                None // Don't show anything if no precipitation within 24 hours
-            }
+
+            forecast_text.push_str(&line);
+            forecast_text.push('\n');
         }
+
+        forecast_text
     }
 
     pub fn format_forecast_text(context: &Context) -> String {

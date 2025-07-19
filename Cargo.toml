@@ -33,6 +33,7 @@ openssl = { version = "0.10", features = ["vendored"] }
 tokio = { version = "1.46", features = ["rt-multi-thread", "time", "signal", "macros"] }
 cursive = "0.21"
 stringcase = "0.4"
+termsize = "0.1.9"
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(tarpaulin_include)'] }

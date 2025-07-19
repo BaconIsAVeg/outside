@@ -86,6 +86,7 @@ pub struct Hourly {
     pub temperature_2m: Vec<f64>,
     pub precipitation_probability: Vec<i32>,
     pub precipitation: Vec<f64>,
+    pub weather_code: Vec<i32>,
 }
 
 #[derive(Default, Serialize, Deserialize, Debug, Savefile)]
@@ -94,6 +95,7 @@ pub struct HourlyUnits {
     pub temperature_2m: String,
     pub precipitation_probability: String,
     pub precipitation: String,
+    pub weather_code: String,
 }
 
 impl Weather {
@@ -131,14 +133,15 @@ impl Weather {
             return Ok(wd);
         }
 
-        let mut data = Self::fetch(lat, lon, metric_unit_strings).with_context(|| "Failed to fetch weather data")?;
+        let mut data =
+            Self::fetch(lat, lon, metric_unit_strings).with_context(|| "Failed to fetch weather data")?;
         data.latitude = format!("{:.1}", data.latitude).parse().unwrap_or(0.0);
         data.longitude = format!("{:.1}", data.longitude).parse().unwrap_or(0.0);
         data.created_at = now;
 
         match save_file(&filename, 0, &data) {
             Ok(_) => {},
-            Err(e) => eprintln!("Unable to save weather data to disk: {:#?}", e),
+            Err(e) => eprintln!("Unable to save weather data to disk: {e:#?}"),
         }
 
         Ok(data)
@@ -169,7 +172,8 @@ impl Weather {
         let base_url = "https://api.open-meteo.com/v1/forecast";
 
         // https://api.open-meteo.com/v1/forecast\?latitude\=51.30011\&longitude\=-114.03528\&daily\=weather_code,temperature_2m_max,temperature_2m_min,sunset,sunrise,precipitation_hours,precipitation_probability_max\&hourly\=temperature_2m,precipitation_probability,precipitation\&current\=temperature_2m,apparent_temperature,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation,weather_code,pressure_msl,relative_humidity_2m\&timezone\=America%2FDenver
-        let hourly_fields = ["temperature_2m", "precipitation_probability", "precipitation"].join(",");
+        let hourly_fields =
+            ["temperature_2m", "precipitation_probability", "precipitation", "weather_code"].join(",");
 
         let current_fields = [
             "temperature_2m",

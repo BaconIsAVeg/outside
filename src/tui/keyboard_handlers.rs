@@ -19,6 +19,7 @@ impl KeyboardHandlers {
         Self::setup_quit_handlers(siv);
         Self::setup_location_handlers(siv, state_manager.clone(), location_manager, weather_fetcher.clone());
         Self::setup_unit_toggle_handler(siv, weather_fetcher);
+        Self::setup_forecast_toggle_handler(siv, state_manager);
     }
 
     fn setup_quit_handlers(siv: &mut Cursive) {
@@ -90,8 +91,7 @@ impl KeyboardHandlers {
                             drop(list);
                             s.add_layer(
                                 Dialog::text(format!(
-                                    "Location '{}' is already in the list.",
-                                    normalized_location
+                                    "Location '{normalized_location}' is already in the list."
                                 ))
                                 .title("Bookmark Already Exists")
                                 .button("OK", |s| {
@@ -176,6 +176,13 @@ impl KeyboardHandlers {
     fn setup_unit_toggle_handler(siv: &mut Cursive, weather_fetcher: WeatherFetcher) {
         siv.add_global_callback('u', move |s| {
             weather_fetcher.toggle_units(s);
+        });
+    }
+
+    fn setup_forecast_toggle_handler(siv: &mut Cursive, state_manager: TuiStateManager) {
+        siv.add_global_callback('f', move |s| {
+            state_manager.toggle_forecast_mode();
+            UiComponents::update_weather_display_components(s, &state_manager);
         });
     }
 

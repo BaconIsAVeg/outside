@@ -20,7 +20,7 @@ impl LocationList {
     pub fn save(&self) {
         let filename = cache::get_cached_file("locations", "list");
         if let Err(e) = save_file(&filename, 0, self) {
-            eprintln!("Unable to save location list: {:#?}", e);
+            eprintln!("Unable to save location list: {e:#?}");
         }
     }
 

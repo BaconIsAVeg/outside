@@ -47,7 +47,7 @@ impl Location for GeoLocation {
         let api_url = utils::urls::builder(base_url, params);
 
         let body = client::get_with_retry(&api_url, 2)
-            .with_context(|| format!("Unable to fetch location data for {}, {}", n, c))?;
+            .with_context(|| format!("Unable to fetch location data for {n}, {c}"))?;
 
         let loc: GeoLocation =
             serde_json::from_str(&body).with_context(|| "Failed to parse location response JSON")?;
