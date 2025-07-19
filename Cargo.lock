@@ -1436,9 +1436,9 @@ checksum = "28d3b2b1366ec20994f1fd18c3c594f05c5dd4bc44d8bb0c1c632c8d6829481f"
 
 [[package]]
 name = "savefile"
-version = "0.18.7"
+version = "0.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "336aa7479a32f1fd5c1faec0e1a1689e2b351111a65e7be20bade956f1a806e6"
+checksum = "efae543b0c35dafb640485acfae6db2c57da94a81393fb411c12f3d6c9084139"
 dependencies = [
  "arrayvec",
  "bit-set 0.5.3",
@@ -1446,6 +1446,7 @@ dependencies = [
  "bit-vec 0.6.3",
  "bit-vec 0.8.0",
  "byteorder",
+ "chrono",
  "indexmap",
  "memoffset",
  "parking_lot",
@@ -1455,9 +1456,9 @@ dependencies = [
 
 [[package]]
 name = "savefile-derive"
-version = "0.18.7"
+version = "0.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7523cec5c125aebcc001239c865df1f9a1fdb1497879557457d2d35949c97b6a"
+checksum = "1e0376f220a3427a88e084a1acd072f3d16a0246abd37114aa801d99ffb9bc1f"
 dependencies = [
  "proc-macro-error2",
  "proc-macro2",

@@ -95,13 +95,18 @@ impl WeatherDisplay {
                 if hour_index < context.hourly.len() {
                     let hour = &context.hourly[hour_index];
 
-                    // Format: " 9am 󰖖 22°C  0.1mm ( 84%)"
-                    // Convert time format from "09:00am" to " 9am"
-                    let formatted_time = hour.time.replace(":00", "");
-                    let formatted_time = if let Some(stripped) = formatted_time.strip_prefix('0') {
-                        format!(" {stripped}")
+                    // Format: " 9am 󰖖 22°C  0.1mm ( 84%)" for 12-hour or "19:00 󰖖 22°C  0.1mm ( 84%)" for 24-hour
+                    let formatted_time = if hour.time.contains("am") || hour.time.contains("pm") {
+                        // 12-hour format: convert "09:00am" to " 9am"
+                        let time_without_zeros = hour.time.replace(":00", "");
+                        if let Some(stripped) = time_without_zeros.strip_prefix('0') {
+                            format!(" {stripped}")
+                        } else {
+                            format!("{time_without_zeros:>4}")
+                        }
                     } else {
-                        format!("{formatted_time:>4}")
+                        // 24-hour format: keep as is "19:00"
+                        format!("{:>5}", hour.time)
                     };
 
                     let temp_unit = if context.temperature_unit.contains('F') { "F" } else { "C" };
