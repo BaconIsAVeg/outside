@@ -50,9 +50,9 @@ pub fn iso8601_to_date(iso8601: String) -> String {
 ///
 /// # Returns
 ///
-/// Returns temperature in Fahrenheit.
+/// Returns temperature in Fahrenheit, rounded to 1 decimal place.
 pub fn celsius_to_fahrenheit(celsius: f64) -> f64 {
-    (celsius * 9.0 / 5.0) + 32.0
+    (((celsius * 9.0 / 5.0) + 32.0) * 10.0).round() / 10.0
 }
 
 /// Converts wind speed from km/h to mph.
@@ -63,9 +63,9 @@ pub fn celsius_to_fahrenheit(celsius: f64) -> f64 {
 ///
 /// # Returns
 ///
-/// Returns wind speed in miles per hour.
+/// Returns wind speed in miles per hour, rounded to 1 decimal place.
 pub fn kmh_to_mph(kmh: f64) -> f64 {
-    kmh * 0.621371
+    (kmh * 0.621371 * 10.0).round() / 10.0
 }
 
 /// Converts precipitation from millimeters to inches.
@@ -76,7 +76,7 @@ pub fn kmh_to_mph(kmh: f64) -> f64 {
 ///
 /// # Returns
 ///
-/// Returns precipitation in inches.
+/// Returns precipitation in inches, rounded to 1 decimal place.
 pub fn mm_to_inches(mm: f64) -> f64 {
-    mm * 0.0393701
+    (mm * 0.0393701 * 10.0).round() / 10.0
 }
