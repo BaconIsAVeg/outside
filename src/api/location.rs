@@ -147,7 +147,7 @@ impl LocationData {
     /// - The API request fails
     /// - No location results are found
     pub fn get_cached(s: Settings) -> Result<Self> {
-        let filename = cache::get_cached_file("location", &s.location, s.units);
+        let filename = cache::get_cached_file("location", &s.location);
         let now = get_now();
 
         let fd: LocationData = load_file(&filename, 0).unwrap_or_default();

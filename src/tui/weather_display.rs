@@ -20,14 +20,13 @@ impl WeatherDisplay {
     }
 
     pub fn format_current_info(context: &Context) -> String {
-        format!(
+        let mut info = format!(
             "Temperature:     {}{}\n\
             Humidity:        {}%\n\
             Pressure:        {} hPa\n\
             Wind:            {} {} with gusts up to {} {} ({})\n\
             UV Index:        {}\n\
-            Precipitation:   {} {} ({}% chance)\n\
-            Sun:             {} • {}",
+            Precipitation:   {} {} ({}% chance)",
             context.temperature.round(),
             context.temperature_unit,
             context.humidity,
@@ -40,10 +39,47 @@ impl WeatherDisplay {
             context.uv_index,
             context.precipitation_sum,
             context.precipitation_unit,
-            context.precipitation_chance,
+            context.precipitation_chance
+        );
+
+        // Add precipitation timing if available
+        if let Some(timing_line) = Self::format_precipitation_timing(context) {
+            info.push('\n');
+            info.push_str(&timing_line);
+        }
+
+        info.push_str(&format!(
+            "\nSun:             {} • {}",
             context.sunrise,
             context.sunset
-        )
+        ));
+
+        info
+    }
+
+    fn format_precipitation_timing(context: &Context) -> Option<String> {
+        // Determine current precipitation status from the first hourly entry
+        let currently_precipitating = context.hourly.first()
+            .map(|h| h.precipitation > 0.0)
+            .unwrap_or(false);
+
+        if currently_precipitating {
+            // Show when precipitation will end
+            if let Some(hours) = context.precipitation_end {
+                let hour_text = if hours == 1 { "hour" } else { "hours" };
+                Some(format!("                 Stops in {} {}", hours, hour_text))
+            } else {
+                None // Don't show anything if no end time within 24 hours
+            }
+        } else {
+            // Show when precipitation will start
+            if let Some(hours) = context.precipitation_start {
+                let hour_text = if hours == 1 { "hour" } else { "hours" };
+                Some(format!("                 Starts in {} {}", hours, hour_text))
+            } else {
+                None // Don't show anything if no precipitation within 24 hours
+            }
+        }
     }
 
     pub fn format_forecast_text(context: &Context) -> String {
@@ -72,6 +108,7 @@ impl WeatherDisplay {
                 weather_description
             ));
         }
+        forecast_text.push('\n');
         forecast_text
     }
 

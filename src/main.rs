@@ -128,7 +128,7 @@ async fn output_weather_data(settings: &Settings) -> Result<()> {
     let loc = LocationData::get_cached(settings.clone())?;
     let weather = weather::Weather::get_cached(loc.latitude, loc.longitude, settings.clone())?;
 
-    let context = context::Context::build(weather, loc);
+    let context = context::Context::build(weather, loc, settings.clone());
     let output = settings.output.render_fn()(context, settings.clone());
 
     println!("{}", output);

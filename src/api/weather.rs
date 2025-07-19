@@ -16,6 +16,8 @@ pub struct Weather {
     pub utc_offset_seconds: i32,
     pub daily: Daily,
     pub daily_units: DailyUnits,
+    pub hourly: Hourly,
+    pub hourly_units: HourlyUnits,
     pub latitude: f64,
     pub longitude: f64,
     #[serde(default)]
@@ -78,6 +80,22 @@ pub struct DailyUnits {
     pub temperature_2m_min: String,
 }
 
+#[derive(Default, Serialize, Deserialize, Debug, Savefile)]
+pub struct Hourly {
+    pub time: Vec<String>,
+    pub temperature_2m: Vec<f64>,
+    pub precipitation_probability: Vec<i32>,
+    pub precipitation: Vec<f64>,
+}
+
+#[derive(Default, Serialize, Deserialize, Debug, Savefile)]
+pub struct HourlyUnits {
+    pub time: String,
+    pub temperature_2m: String,
+    pub precipitation_probability: String,
+    pub precipitation: String,
+}
+
 impl Weather {
     /// Retrieves weather data for the specified coordinates, using cached data if available.
     ///
@@ -102,10 +120,10 @@ impl Weather {
     /// - The response cannot be parsed as JSON
     /// - Network connectivity issues occur
     pub fn get_cached(lat: f64, lon: f64, s: Settings) -> Result<Self> {
-        let filename = utils::cache::get_cached_file("weather", &s.location, s.units.to_owned());
+        let filename = utils::cache::get_cached_file("weather", &s.location);
         let now = utils::get_now();
 
-        let unit_strings = s.units.to_unit_strings();
+        let metric_unit_strings = utils::unitstrings::UnitStrings::metric();
 
         let wd: Weather = load_file(&filename, 0).unwrap_or_default();
 
@@ -113,7 +131,7 @@ impl Weather {
             return Ok(wd);
         }
 
-        let mut data = Self::fetch(lat, lon, unit_strings).with_context(|| "Failed to fetch weather data")?;
+        let mut data = Self::fetch(lat, lon, metric_unit_strings).with_context(|| "Failed to fetch weather data")?;
         data.latitude = format!("{:.1}", data.latitude).parse().unwrap_or(0.0);
         data.longitude = format!("{:.1}", data.longitude).parse().unwrap_or(0.0);
         data.created_at = now;
@@ -149,6 +167,9 @@ impl Weather {
     /// - The API returns an error response
     fn fetch(lat: f64, lon: f64, units: utils::unitstrings::UnitStrings) -> Result<Self> {
         let base_url = "https://api.open-meteo.com/v1/forecast";
+
+        // https://api.open-meteo.com/v1/forecast\?latitude\=51.30011\&longitude\=-114.03528\&daily\=weather_code,temperature_2m_max,temperature_2m_min,sunset,sunrise,precipitation_hours,precipitation_probability_max\&hourly\=temperature_2m,precipitation_probability,precipitation\&current\=temperature_2m,apparent_temperature,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation,weather_code,pressure_msl,relative_humidity_2m\&timezone\=America%2FDenver
+        let hourly_fields = ["temperature_2m", "precipitation_probability", "precipitation"].join(",");
 
         let current_fields = [
             "temperature_2m",
@@ -186,6 +207,7 @@ impl Weather {
             ("forecast_days", "7"),
             ("current", current_fields.as_str()),
             ("daily", daily_fields.as_str()),
+            ("hourly", hourly_fields.as_str()),
             ("temperature_unit", units.temperature.as_str()),
             ("wind_speed_unit", units.wind_speed.as_str()),
             ("precipitation_unit", units.precipitation.as_str()),

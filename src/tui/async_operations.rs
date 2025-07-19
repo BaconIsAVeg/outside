@@ -219,10 +219,10 @@ impl WeatherFetcher {
         let location_data = LocationData::get_cached(settings.clone())?;
 
         // Fetch weather data
-        let weather_data = Weather::get_cached(location_data.latitude, location_data.longitude, settings)?;
+        let weather_data = Weather::get_cached(location_data.latitude, location_data.longitude, settings.clone())?;
 
         // Build context
-        let context = Context::build(weather_data, location_data);
+        let context = Context::build(weather_data, location_data, settings);
 
         Ok(context)
     }
