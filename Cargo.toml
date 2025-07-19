@@ -26,8 +26,8 @@ url = "2.5.4"
 chrono = "0.4.41"
 
 dirs-next = "2.0.0"
-savefile = "0.18"
-savefile-derive = "0.18"
+savefile = "0.19"
+savefile-derive = "0.19"
 tinytemplate = "1.2.1"
 openssl = { version = "0.10", features = ["vendored"] }
 tokio = { version = "1.46", features = ["rt-multi-thread", "time", "signal", "macros"] }
