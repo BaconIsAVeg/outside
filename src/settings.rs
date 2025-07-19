@@ -117,6 +117,10 @@ pub struct Settings {
     #[cli_settings_clap = "#[arg(short, long, default_value = \"30\", verbatim_doc_comment)]"]
     pub interval: u64,
 
+    /// Use a 24-hour time format
+    #[cli_settings_clap = "#[arg(long = \"24\", action = clap::ArgAction::SetTrue, verbatim_doc_comment)]"]
+    pub hour24: bool,
+
     #[cli_settings_file]
     pub simple: SimpleConfig,
 

@@ -3,22 +3,28 @@ use chrono::{NaiveDate, NaiveDateTime};
 /// Converts an ISO8601 datetime string to a human-readable time format.
 ///
 /// Takes a datetime string in the format "YYYY-MM-DDTHH:MM" and converts it
-/// to a 12-hour time format with AM/PM indicator (e.g., "08:30am").
+/// to either 12-hour format with AM/PM indicator (e.g., "08:30am") or 24-hour
+/// format (e.g., "20:30") based on the hour24 parameter.
 ///
 /// # Arguments
 ///
 /// * `iso8601` - A datetime string in ISO8601 format
+/// * `hour24` - If true, returns 24-hour format; if false, returns 12-hour format
 ///
 /// # Returns
 ///
-/// Returns a formatted time string in 12-hour format with lowercase AM/PM.
+/// Returns a formatted time string in the requested format.
 ///
 /// # Panics
 ///
 /// Panics if the input string cannot be parsed as a valid ISO8601 datetime.
-pub fn iso8601_to_time(iso8601: String) -> String {
+pub fn iso8601_to_time(iso8601: String, hour24: bool) -> String {
     let dt = NaiveDateTime::parse_from_str(&iso8601, "%Y-%m-%dT%H:%M").unwrap();
-    dt.format("%I:%M%P").to_string()
+    if hour24 {
+        dt.format("%H:%M").to_string()
+    } else {
+        dt.format("%I:%M%P").to_string()
+    }
 }
 
 /// Converts an ISO8601 date string to a human-readable date format.

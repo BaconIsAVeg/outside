@@ -104,8 +104,8 @@ impl Context {
         let weather_description = mappings::weather_description(current.weather_code);
         let weather_icon = mappings::weather_code2icon(current.weather_code);
 
-        let sunrise = conversions::iso8601_to_time(daily.sunrise[0].clone());
-        let sunset = conversions::iso8601_to_time(daily.sunset[0].clone());
+        let sunrise = conversions::iso8601_to_time(daily.sunrise[0].clone(), settings.hour24);
+        let sunset = conversions::iso8601_to_time(daily.sunset[0].clone(), settings.hour24);
 
         let cache_age = now - weather.created_at;
 
@@ -192,7 +192,7 @@ impl Context {
             .skip(current_hour_index)
             .take(24)
             .map(|(i, time)| ContextHourly {
-                time: conversions::iso8601_to_time(time.clone()),
+                time: conversions::iso8601_to_time(time.clone(), settings.hour24),
                 temperature: if is_imperial {
                     conversions::celsius_to_fahrenheit(hourly.temperature_2m[i])
                 } else {
