@@ -13,14 +13,14 @@ pub struct LocationList {
 
 impl LocationList {
     pub fn load() -> Self {
-        let filename = cache::get_cached_file("locations", "list", crate::settings::Units::Metric);
+        let filename = cache::get_cached_file("locations", "list");
         load_file(&filename, 0).unwrap_or_default()
     }
 
     pub fn save(&self) {
-        let filename = cache::get_cached_file("locations", "list", crate::settings::Units::Metric);
+        let filename = cache::get_cached_file("locations", "list");
         if let Err(e) = save_file(&filename, 0, self) {
-            eprintln!("Unable to save location list: {:#?}", e);
+            eprintln!("Unable to save location list: {e:#?}");
         }
     }
 

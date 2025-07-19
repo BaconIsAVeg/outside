@@ -7,7 +7,7 @@ use clap::ValueEnum;
 use cli_settings_derive::cli_settings;
 use serde::{Deserialize, Serialize};
 
-#[derive(ValueEnum, Clone, Debug, Serialize, Deserialize, Default)]
+#[derive(ValueEnum, Clone, Debug, Serialize, Deserialize, Default, PartialEq)]
 pub enum Units {
     #[default]
     Metric,

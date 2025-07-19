@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 const DEFAULT_TEXT_TEMPLATE: &str =
     "{weather_icon} {temperature | round}{temperature_unit}{{if precipitation_sum}} 󰖗 {precipitation_chance}%{{endif}}";
-const DEFAULT_TOOLTIP_TEMPLATE: &str = "{city}, {country}\n{weather_description}\nFeels Like  {feels_like} {temperature_unit}\nForecast    {temperature_low | round}-{temperature_high| round} {temperature_unit}\nHumidity    {humidity}{humidity_unit}\nPressure    {pressure} {pressure_unit}\nWind        {wind_speed}{wind_gusts} {wind_speed_unit} ({wind_compass})\nPrecip      {precipitation_sum} {precipitation_unit} ({precipitation_chance}% chance)\n\n {sunrise}    {sunset}";
+const DEFAULT_TOOLTIP_TEMPLATE: &str = "{city}, {country}\n{weather_description}\nFeels Like  {feels_like} {temperature_unit}\nForecast    {temperature_low | round}-{temperature_high| round} {temperature_unit}\nHumidity    {humidity}{humidity_unit}\nPressure    {pressure} {pressure_unit}\nWind        {wind_speed}{wind_gusts} {wind_speed_unit} ({wind_compass})\nPrecip      {precipitation_sum} {precipitation_unit} ({precipitation_chance}% chance)\n{{if precipitation_description}}            {precipitation_description}{{endif}}\n {sunrise}    {sunset}";
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct WaybarOutput {

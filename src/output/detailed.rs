@@ -8,19 +8,6 @@ pub struct DetailedOutput {
     pub template: String,
 }
 
-const DEFAULT_TEMPLATE: &str = "{city}, {country}\n\
-    Current:     {temperature}{temperature_unit} {weather_description}\n\
-    Feels Like:  {feels_like}{temperature_unit}\n\
-    Humidity:    {humidity}{humidity_unit}\n\
-    Pressure:    {pressure}{pressure_unit}\n\
-    Wind:        {wind_speed}{wind_speed_unit} with gusts up to {wind_gusts}{wind_speed_unit} ({wind_compass})\n\
-    UV Index:    {uv_index}\n\
-    Precip:      {precipitation_sum} {precipitation_unit} ({precipitation_chance}% chance)\n\
-    Sunrise:     {sunrise}\n\
-    Sunset:      {sunset}\n\n\
-    {{ for day in forecast -}}
-    {day.date}    {day.temperature_low | round}-{day.temperature_high | round}{temperature_unit} - {day.weather_description}\n\
-    {{ endfor }}";
 impl Output for DetailedOutput {
     /// Creates a new DetailedOutput instance with rendered template.
     ///
@@ -38,8 +25,35 @@ impl Output for DetailedOutput {
     /// Returns a DetailedOutput instance with the rendered template.
     fn new(context: Context, _: Settings) -> Self {
         let mut tt = Self::tt();
-        let text_template = DEFAULT_TEMPLATE;
-        tt.add_template("text", text_template).expect("Failed to add text template");
+
+        // Build dynamic template with precipitation timing
+        let mut template_parts = vec![
+            "{city}, {country}".to_string(),
+            "    Current:     {temperature}{temperature_unit} {weather_description}".to_string(),
+            "    Feels Like:  {feels_like}{temperature_unit}".to_string(),
+            "    Humidity:    {humidity}{humidity_unit}".to_string(),
+            "    Pressure:    {pressure}{pressure_unit}".to_string(),
+            "    Wind:        {wind_speed}{wind_speed_unit} with gusts up to {wind_gusts}{wind_speed_unit} ({wind_compass})".to_string(),
+            "    UV Index:    {uv_index}".to_string(),
+        ];
+        // Add precipitation with optional timing description
+        let precip_line = if let Some(description) = &context.precipitation_description {
+            format!("    Precip:      {{precipitation_sum}} {{precipitation_unit}} ({{precipitation_chance}}% chance, {description})")
+        } else {
+            "    Precip:      {precipitation_sum} {precipitation_unit} ({precipitation_chance}% chance)"
+                .to_string()
+        };
+        template_parts.push(precip_line);
+
+        template_parts.push("    Sunrise:     {sunrise}".to_string());
+        template_parts.push("    Sunset:      {sunset}".to_string());
+        template_parts.push("".to_string());
+        template_parts.push("    {{ for day in forecast -}}".to_string());
+        template_parts.push("    {day.date}    {day.temperature_low | round}-{day.temperature_high | round}{temperature_unit} - {day.weather_description}".to_string());
+        template_parts.push("    {{ endfor }}".to_string());
+
+        let text_template = template_parts.join("\n");
+        tt.add_template("text", &text_template).expect("Failed to add text template");
 
         let template =
             tt.render("text", &context).unwrap_or_else(|_| "Error rendering text template".to_string());

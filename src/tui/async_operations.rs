@@ -3,6 +3,7 @@ use crate::api::weather::Weather;
 use crate::context::Context;
 use crate::tui::constants::*;
 use crate::tui::state_manager::TuiStateManager;
+use crate::tui::ui_components::UiComponents;
 use crate::tui::weather_display::WeatherDisplay;
 use cursive::views::{ProgressBar, TextView};
 use cursive::Cursive;
@@ -51,7 +52,7 @@ impl WeatherFetcher {
                     .unwrap();
             } else {
                 // Handle error case
-                let error_message = format!("Failed to fetch location data for: {}", location_clone);
+                let error_message = format!("Failed to fetch location data for: {location_clone}");
                 cb_sink
                     .send(Box::new(move |s| {
                         state_manager_clone.set_loading(false);
@@ -70,7 +71,7 @@ impl WeatherFetcher {
             move |s, state_manager, context| {
                 // Update both context and currently selected location
                 state_manager.update_context_with_location(context, location_clone.clone());
-                Self::update_weather_display(s, state_manager);
+                UiComponents::update_weather_display_components(s, state_manager);
             },
             |s, _state_manager, error_message| {
                 Self::show_error_dialog(s, &error_message);
@@ -103,7 +104,7 @@ impl WeatherFetcher {
                 cb_sink
                     .send(Box::new(move |s| {
                         state_manager_clone.update_context_with_location(result, location_for_update);
-                        Self::update_weather_display(s, &state_manager_clone);
+                        UiComponents::update_weather_display_components(s, &state_manager_clone);
                     }))
                     .unwrap();
             } else {
@@ -112,7 +113,7 @@ impl WeatherFetcher {
                         state_manager_clone.set_loading(false);
                         Self::show_error_dialog(s, "Failed to fetch weather data with new units");
                         // Revert to previous weather display
-                        Self::update_weather_display(s, &state_manager_clone);
+                        UiComponents::update_weather_display_components(s, &state_manager_clone);
                     }))
                     .unwrap();
             }
@@ -141,7 +142,7 @@ impl WeatherFetcher {
                 let _ = cb_sink.send(Box::new(move |s| {
                     // Update cache_age in context to current time difference
                     state_for_display.update_cache_age();
-                    Self::update_weather_display(s, &state_for_display);
+                    UiComponents::update_weather_display_components(s, &state_for_display);
                 }));
             }
         });
@@ -159,35 +160,6 @@ impl WeatherFetcher {
         });
         siv.call_on_name(DATA_AGE_PROGRESS_NAME, |view: &mut ProgressBar| {
             view.set_value(0);
-        });
-    }
-
-    fn update_weather_display(siv: &mut Cursive, state_manager: &TuiStateManager) {
-        if state_manager.is_loading() {
-            return;
-        }
-
-        let context = state_manager.get_context();
-        let header_text = WeatherDisplay::format_header_text(&context);
-        let current_info = WeatherDisplay::format_current_info(&context);
-        let forecast_text = WeatherDisplay::format_forecast_text(&context);
-
-        siv.call_on_name(WEATHER_HEADER_NAME, |view: &mut TextView| {
-            view.set_content(header_text);
-        });
-        siv.call_on_name(WEATHER_CURRENT_NAME, |view: &mut TextView| {
-            view.set_content(current_info);
-        });
-        siv.call_on_name(WEATHER_FORECAST_NAME, |view: &mut TextView| {
-            view.set_content(forecast_text);
-        });
-
-        // Update data age progress bar
-        let cache_duration = WEATHER_CACHE_DURATION;
-        let progress_percentage =
-            ((context.cache_age as f64 / cache_duration as f64) * 100.0).min(100.0) as usize;
-        siv.call_on_name(DATA_AGE_PROGRESS_NAME, |view: &mut ProgressBar| {
-            view.set_value(progress_percentage);
         });
     }
 
@@ -219,10 +191,11 @@ impl WeatherFetcher {
         let location_data = LocationData::get_cached(settings.clone())?;
 
         // Fetch weather data
-        let weather_data = Weather::get_cached(location_data.latitude, location_data.longitude, settings)?;
+        let weather_data =
+            Weather::get_cached(location_data.latitude, location_data.longitude, settings.clone())?;
 
         // Build context
-        let context = Context::build(weather_data, location_data);
+        let context = Context::build(weather_data, location_data, settings);
 
         Ok(context)
     }

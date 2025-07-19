@@ -3,6 +3,12 @@ use crate::settings::Units;
 use crate::Settings;
 use std::sync::{Arc, Mutex};
 
+#[derive(Debug, Clone, PartialEq)]
+pub enum ForecastMode {
+    Daily,  // 7-day forecast
+    Hourly, // 24-hour forecast
+}
+
 #[derive(Debug, Clone)]
 pub struct TuiState {
     pub context: Context,
@@ -11,6 +17,7 @@ pub struct TuiState {
     pub last_fetch_time: u64,
     pub weather_created_at: u64,
     pub currently_selected_location: String,
+    pub forecast_mode: ForecastMode,
 }
 
 pub struct TuiStateManager {
@@ -36,6 +43,7 @@ impl TuiStateManager {
             last_fetch_time: weather_created_at,
             weather_created_at,
             currently_selected_location,
+            forecast_mode: ForecastMode::Daily,
         };
         let state = Arc::new(Mutex::new(initial_state));
         Self { state }
@@ -112,5 +120,19 @@ impl TuiStateManager {
         let mut state_guard = self.state.lock().unwrap();
         let now = crate::utils::get_now();
         state_guard.context.cache_age = now - state_guard.weather_created_at;
+    }
+
+    pub fn toggle_forecast_mode(&self) -> ForecastMode {
+        let mut state_guard = self.state.lock().unwrap();
+        state_guard.forecast_mode = match state_guard.forecast_mode {
+            ForecastMode::Daily => ForecastMode::Hourly,
+            ForecastMode::Hourly => ForecastMode::Daily,
+        };
+        state_guard.forecast_mode.clone()
+    }
+
+    pub fn get_forecast_mode(&self) -> ForecastMode {
+        let state_guard = self.state.lock().unwrap();
+        state_guard.forecast_mode.clone()
     }
 }

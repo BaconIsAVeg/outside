@@ -34,6 +34,7 @@ Down 4 Sleep 500ms Enter Sleep 2s
 Type "afoo, bar" Sleep 500ms Enter Sleep 2s Enter Sleep 2s
 Type "alos angeles,us" Sleep 500ms Enter Sleep 2s Enter Sleep 1s
 
+Type "f" Sleep 2s
 Type "u" Sleep 2s
 Type "d" Sleep 2s Enter Sleep 2s
 Type "q" Sleep 1s
