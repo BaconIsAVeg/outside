@@ -1,6 +1,6 @@
 # Outside
 
-![demo](https://github.com/BaconIsAVeg/outside/blob/main/demo/demo.gif)
+![demo](https://github.com/BaconIsAVeg/outside/blob/main/demo/demo.gif?raw=true)
 
 A multi-purpose weather client for your terminal.
 
