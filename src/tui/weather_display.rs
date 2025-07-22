@@ -110,7 +110,7 @@ impl WeatherDisplay {
                     };
 
                     let temp_unit = if context.temperature_unit.contains('F') { "F" } else { "C" };
-                    let temp = format!("{}°{}", hour.temperature.round(), temp_unit);
+                    let temp = format!("{:2}°{}", hour.temperature.round(), temp_unit);
                     let precip = format!("{:4.1}{}", hour.precipitation, context.precipitation_unit);
                     let prob = format!("{:3}%", hour.precipitation_probability);
 
